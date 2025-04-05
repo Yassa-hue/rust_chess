@@ -1,3 +1,7 @@
+mod chessboard;
+mod game;
+mod movables;
+
 fn main() {
-    println!("Chess Game");
+    print!("Chess Game")
 }
