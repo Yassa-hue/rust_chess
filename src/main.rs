@@ -1,13 +1,13 @@
 mod chessboard;
 mod game;
-mod movables;
+mod pieces;
 mod cmd_presenter;
 
 fn main() {
     print!("Chess Game");
     
     print!("Initializing...");
-    let mut game = game::Game::new(movables::Color::White);
+    let mut game = game::Game::new(pieces::Color::White);
     println!("Game initialized.");
     
     println!("Starting game loop...");
@@ -27,8 +27,8 @@ fn main() {
             continue;
         }
         
-        let start_pos = movables::Position::from_str(positions[0]);
-        let end_pos = movables::Position::from_str(positions[1]);
+        let start_pos = pieces::Position::from_str(positions[0]);
+        let end_pos = pieces::Position::from_str(positions[1]);
         
         match game.play(start_pos, end_pos) {
             Ok(_) => println!("Move successful!"),

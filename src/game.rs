@@ -1,5 +1,5 @@
 use crate::chessboard::Chessboard;
-use crate::movables::{Color, Position};
+use crate::pieces::types::{Color, Position};
 
 pub struct Game {
     player_color: Color,

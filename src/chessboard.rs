@@ -1,4 +1,4 @@
-use crate::movables::{
+use crate::pieces::{
     BOARD_SIZE, Bishop, Color, King, Knight, Movable, Pawn, Position, Queen, Rook,
 };
 use std::array::from_fn;

@@ -1,5 +1,5 @@
 use std::fmt::{self, Display, Formatter};
-use crate::{chessboard::Chessboard, movables::{Bishop, Color, King, Knight, Movable, Pawn, Queen, Rook}};
+use crate::{chessboard::Chessboard, pieces::{Bishop, Color, King, Knight, Movable, Pawn, Queen, Rook}};
 use crate::game::Game;
 
 impl Display for Pawn {
