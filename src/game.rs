@@ -1,5 +1,5 @@
 use crate::chessboard::Chessboard;
-use crate::movables::{Color, Movable, Position};
+use crate::movables::{Color, Position};
 
 pub struct Game {
     player_color: Color,
@@ -8,7 +8,7 @@ pub struct Game {
 
 impl Game {
     pub fn new(player_color: Color) -> Self {
-        let mut chessboard = Chessboard::new();
+        let chessboard = Chessboard::new();
         Game {
             player_color,
             chessboard,
@@ -27,5 +27,13 @@ impl Game {
             }
             Err(e) => Err(e),
         }
+    }
+
+    pub fn chessboard(&self) -> &Chessboard {
+        &self.chessboard
+    }
+
+    pub fn player_color(&self) -> Color {
+        self.player_color
     }
 }

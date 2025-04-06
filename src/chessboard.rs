@@ -9,17 +9,17 @@ const WHITE_POWNS_ROW_X_POS: usize = 1;
 const FIRST_BLACK_ROW_X_POS: usize = 7;
 const BLACK_POWNS_ROW_X_POS: usize = 6;
 
-type chessboard_type = [[Option<Box<dyn Movable>>; BOARD_SIZE]; BOARD_SIZE];
+type ChessboardType = [[Option<Box<dyn Movable>>; BOARD_SIZE]; BOARD_SIZE];
 
 pub struct Chessboard {
-    chessboard: chessboard_type,
-    white_dead_pieces: Vec<Box<dyn Movable>>,
-    black_dead_pieces: Vec<Box<dyn Movable>>,
+  chessboard: ChessboardType,
+  white_dead_pieces: Vec<Box<dyn Movable>>,
+  black_dead_pieces: Vec<Box<dyn Movable>>,
 }
 
 impl Chessboard {
     pub fn new() -> Self {
-        let mut chessboard: chessboard_type = from_fn(|_| from_fn(|_| None));
+        let mut chessboard: ChessboardType = from_fn(|_| from_fn(|_| None));
 
         Self::initialize_pieces(
             &mut chessboard,
@@ -42,7 +42,7 @@ impl Chessboard {
     }
 
     fn initialize_pieces(
-        chessboard: &mut chessboard_type,
+        chessboard: &mut ChessboardType,
         color: Color,
         first_row_pos: usize,
         pawns_row_pos: usize,
@@ -144,4 +144,8 @@ impl Chessboard {
 
         Err("Invalid move".to_string())
     }
+
+    pub fn chessboard(&self) -> &ChessboardType {
+      &self.chessboard
+  }
 }

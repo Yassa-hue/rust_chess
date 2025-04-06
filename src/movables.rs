@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 pub const BOARD_SIZE: usize = 8;
 
 #[derive(Debug, Clone, Copy)]
@@ -41,6 +43,14 @@ impl Position {
     pub fn y(&self) -> usize {
         self.y
     }
+
+    pub fn from_str(position: &str) -> Self {
+        let chars: Vec<char> = position.chars().collect();
+        let x = chars[0].to_digit(10).unwrap() as usize - 1;
+        let y = chars[1].to_digit(10).unwrap() as usize - 1;
+
+        Position::new(x, y)
+    }
 }
 
 impl std::ops::Add<(i32, i32)> for Position {
@@ -71,7 +81,7 @@ impl PartialEq for Position {
     }
 }
 
-enum MoveOffsets {
+pub enum MoveOffsets {
     AppliableOnce(Vec<(i32, i32)>),
     AppliableMultiple(Vec<(i32, i32)>),
 }
@@ -111,7 +121,7 @@ impl MoveOffsets {
     }
 }
 
-pub trait Movable {
+pub trait Movable: Display {
     fn get_move_offsets(&self) -> MoveOffsets;
 
     fn color(&self) -> &Color;
