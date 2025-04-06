@@ -5,6 +5,23 @@ pub enum Color {
     White,
     Black,
 }
+impl Color {
+    pub fn next(&self) -> Self {
+        match self {
+            Color::White => Color::Black,
+            Color::Black => Color::White,
+        }
+    }
+}
+impl PartialEq for Color {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Color::White, Color::White) => true,
+            (Color::Black, Color::Black) => true,
+            _ => false,
+        }
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
 pub struct Position {
@@ -13,8 +30,16 @@ pub struct Position {
 }
 
 impl Position {
-    fn new(x: usize, y: usize) -> Self {
+    pub fn new(x: usize, y: usize) -> Self {
         Position { x, y }
+    }
+
+    pub fn x(&self) -> usize {
+        self.x
+    }
+
+    pub fn y(&self) -> usize {
+        self.y
     }
 }
 
@@ -37,6 +62,12 @@ impl std::ops::Add<(i32, i32)> for Position {
             x: new_x as usize,
             y: new_y as usize,
         })
+    }
+}
+
+impl PartialEq for Position {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y
     }
 }
 
