@@ -1,7 +1,7 @@
 mod chessboard;
 mod game;
 mod pieces;
-mod cmd_presenter;
+mod presenters;
 
 fn main() {
     print!("Chess Game");

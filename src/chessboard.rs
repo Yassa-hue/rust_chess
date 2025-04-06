@@ -121,8 +121,9 @@ impl Chessboard {
         &mut self,
         piece_position: Position,
         target_position: Position,
+        current_player_color: Color,
     ) -> Result<(), String> {
-        if self.is_valid_path(piece_position, target_position, Color::White) {
+        if self.is_valid_path(piece_position, target_position, current_player_color) {
             let piece = self.chessboard[piece_position.x()][piece_position.y()]
                 .take()
                 .unwrap();

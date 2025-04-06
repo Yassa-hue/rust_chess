@@ -20,7 +20,7 @@ impl Game {
         piece_position: Position,
         target_position: Position,
     ) -> Result<(), String> {
-        match self.chessboard.move_piece(piece_position, target_position) {
+        match self.chessboard.move_piece(piece_position, target_position, self.player_color) {
             Ok(_) => {
                 self.player_color = self.player_color.next();
                 Ok(())
