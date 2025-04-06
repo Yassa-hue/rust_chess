@@ -81,12 +81,12 @@ impl MoveOffsets {
 }
 
 pub trait Movable {
-    fn move_offsets(&self) -> MoveOffsets;
+    fn get_move_offsets(&self) -> MoveOffsets;
 
     fn color(&self) -> &Color;
 
     fn get_valid_moves(&self, current_position: Position) -> Vec<Position> {
-        let move_offsets = self.move_offsets();
+        let move_offsets = self.get_move_offsets();
 
         move_offsets.apply_offsets(current_position)
     }
@@ -104,7 +104,7 @@ impl Pawn {
 }
 
 impl Movable for Pawn {
-    fn move_offsets(&self) -> MoveOffsets {
+    fn get_move_offsets(&self) -> MoveOffsets {
         let offsets = match self.color {
             Color::White => vec![(0, 1)],
             Color::Black => vec![(0, -1)],
@@ -139,7 +139,7 @@ impl Knight {
 }
 
 impl Movable for Knight {
-    fn move_offsets(&self) -> MoveOffsets {
+    fn get_move_offsets(&self) -> MoveOffsets {
         MoveOffsets::new_appliable_once(KNIGHT_MOVE_OFFSETS.to_vec())
     }
 
@@ -161,7 +161,7 @@ impl Bishop {
 }
 
 impl Movable for Bishop {
-    fn move_offsets(&self) -> MoveOffsets {
+    fn get_move_offsets(&self) -> MoveOffsets {
         MoveOffsets::new_appliable_multiple(BISHOP_MOVES.to_vec())
     }
 
@@ -182,7 +182,7 @@ impl Rook {
 }
 
 impl Movable for Rook {
-    fn move_offsets(&self) -> MoveOffsets {
+    fn get_move_offsets(&self) -> MoveOffsets {
         MoveOffsets::new_appliable_multiple(ROOK_MOVES.to_vec())
     }
 
@@ -213,7 +213,7 @@ impl Queen {
 }
 
 impl Movable for Queen {
-    fn move_offsets(&self) -> MoveOffsets {
+    fn get_move_offsets(&self) -> MoveOffsets {
         MoveOffsets::new_appliable_multiple(QUEEN_MOVES.to_vec())
     }
 
@@ -244,7 +244,7 @@ impl King {
 }
 
 impl Movable for King {
-    fn move_offsets(&self) -> MoveOffsets {
+    fn get_move_offsets(&self) -> MoveOffsets {
         MoveOffsets::new_appliable_once(KING_MOVES.to_vec())
     }
 
