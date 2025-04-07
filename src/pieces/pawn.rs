@@ -1,5 +1,4 @@
-// import necessary modules
-use crate::pieces::traits::Movable;
+use crate::pieces::traits::{Movable, Piece};
 use crate::pieces::types::{Color, MoveOffsets};
 
 #[derive(Clone, Copy)]
@@ -13,6 +12,12 @@ impl Pawn {
   }
 }
 
+impl Piece for Pawn {
+  fn color(&self) -> &Color {
+    &self.color
+  }
+}
+
 impl Movable for Pawn {
   fn get_move_offsets(&self) -> MoveOffsets {
     let offsets = match self.color {
@@ -20,9 +25,5 @@ impl Movable for Pawn {
       Color::Black => vec![(-1, 0)],
     };
     MoveOffsets::new_appliable_once(offsets)
-  }
-
-  fn color(&self) -> &Color {
-    &self.color
   }
 }

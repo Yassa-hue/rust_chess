@@ -1,91 +1,103 @@
+use std::fmt;
+
 use crate::game::Game;
 use crate::{
   chessboard::Chessboard,
-  pieces::{Bishop, Color, King, Knight, Movable, Pawn, Queen, Rook},
+  pieces::{Bishop, Color, King, Knight, Pawn, Piece, Queen, Rook},
 };
-use std::fmt::{self, Display, Formatter};
 
-impl Display for Pawn {
-  fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+use super::Presenter;
+
+impl Presenter for Pawn {
+  fn render(&self) {
     match self.color() {
-      Color::White => write!(f, "P"),
-      Color::Black => write!(f, "p"),
+      Color::White => print!("P "),
+      Color::Black => print!("p "),
     }
   }
 }
 
-impl Display for Bishop {
-  fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+impl Presenter for Bishop {
+  fn render(&self) {
     match self.color() {
-      Color::White => write!(f, "B"),
-      Color::Black => write!(f, "b"),
+      Color::White => print!("B "),
+      Color::Black => print!("b "),
     }
   }
 }
 
-impl Display for Knight {
-  fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+impl Presenter for Knight {
+  fn render(&self) {
     match self.color() {
-      Color::White => write!(f, "N"),
-      Color::Black => write!(f, "n"),
+      Color::White => print!("N "),
+      Color::Black => print!("n "),
     }
   }
 }
 
-impl Display for Rook {
-  fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+impl Presenter for Rook {
+  fn render(&self) {
     match self.color() {
-      Color::White => write!(f, "R"),
-      Color::Black => write!(f, "r"),
+      Color::White => print!("R "),
+      Color::Black => print!("r "),
     }
   }
 }
 
-impl Display for Queen {
-  fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+impl Presenter for Queen {
+  fn render(&self) {
     match self.color() {
-      Color::White => write!(f, "Q"),
-      Color::Black => write!(f, "q"),
+      Color::White => print!("Q "),
+      Color::Black => print!("q "),
     }
   }
 }
 
-impl Display for King {
-  fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+impl Presenter for King {
+  fn render(&self) {
     match self.color() {
-      Color::White => write!(f, "K"),
-      Color::Black => write!(f, "k"),
+      Color::White => print!("K "),
+      Color::Black => print!("k "),
     }
   }
 }
 
-impl fmt::Display for Chessboard {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl Presenter for Chessboard {
+  fn render(&self) {
     for (i, row) in self.chessboard().iter().enumerate() {
-      write!(f, "{:3} ", 8 - i)?; // Add row numbers (123..)
+      print!("{:3} ", 8 - i); // Add row numbers (123..)
       for square in row.iter() {
         match square {
           Some(piece) => {
-            write!(f, "{} ", piece)?;
+            piece.render(); // Render piece using the render method
+            print!(" "); // Space between pieces
           }
           None => {
-            write!(f, ". ")?;
+            print!(". "); // Empty square
           }
         }
       }
-      writeln!(f)?;
+      println!(); // Move to the next line after each row
     }
-    write!(f, "    ")?;
+    print!("    ");
     for c in b'a'..=b'h' {
-      write!(f, "{} ", c as char)?;
+      print!("{} ", c as char); // Print column labels (a-h)
     }
-    writeln!(f)?;
-    Ok(())
+    println!(); // Newline for column labels
   }
 }
 
-impl Display for Color {
-  fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+impl Presenter for Color {
+  fn render(&self) {
+    match self {
+      Color::White => print!("White"),
+      Color::Black => print!("Black"),
+    }
+  }
+}
+
+impl fmt::Display for Color {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
       Color::White => write!(f, "White"),
       Color::Black => write!(f, "Black"),
@@ -93,9 +105,9 @@ impl Display for Color {
   }
 }
 
-impl Display for Game {
-  fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-    write!(f, "Current player: {}", self.player_color())?;
-    write!(f, "\n{}", self.chessboard())
+impl Presenter for Game {
+  fn render(&self) {
+    println!("Current player: {}", self.player_color());
+    self.chessboard().render(); // Render the chessboard
   }
 }

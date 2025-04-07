@@ -1,5 +1,6 @@
 use crate::game::Game;
 use crate::pieces::Position;
+use crate::presenters::Presenter;
 use crate::ui::GameUI;
 use std::io;
 
@@ -8,7 +9,7 @@ pub struct CmdUI;
 impl GameUI for CmdUI {
   fn start_game_loop(&mut self, game: &mut Game) {
     loop {
-      println!("{}", game);
+      game.render();
 
       let mut input = String::new();
       println!("Enter your move (e.g., e2 e4): ");

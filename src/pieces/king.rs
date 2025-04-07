@@ -1,4 +1,4 @@
-use crate::pieces::traits::Movable;
+use crate::pieces::traits::{Movable, Piece};
 use crate::pieces::types::{Color, MoveOffsets};
 
 #[derive(Clone, Copy)]
@@ -22,12 +22,14 @@ impl King {
   }
 }
 
+impl Piece for King {
+  fn color(&self) -> &Color {
+    &self.color
+  }
+}
+
 impl Movable for King {
   fn get_move_offsets(&self) -> MoveOffsets {
     MoveOffsets::new_appliable_once(KING_MOVES.to_vec())
-  }
-
-  fn color(&self) -> &Color {
-    &self.color
   }
 }

@@ -1,6 +1,4 @@
-use crate::pieces::{
-  BOARD_SIZE, Bishop, Color, King, Knight, Movable, Pawn, Position, Queen, Rook,
-};
+use crate::pieces::{BOARD_SIZE, Bishop, Color, King, Knight, Pawn, Piece, Position, Queen, Rook};
 use std::array::from_fn;
 
 const FIRST_WHITE_ROW_X_POS: usize = 0;
@@ -9,12 +7,12 @@ const WHITE_POWNS_ROW_X_POS: usize = 1;
 const FIRST_BLACK_ROW_X_POS: usize = 7;
 const BLACK_POWNS_ROW_X_POS: usize = 6;
 
-type ChessboardType = [[Option<Box<dyn Movable>>; BOARD_SIZE]; BOARD_SIZE];
+type ChessboardType = [[Option<Box<dyn Piece>>; BOARD_SIZE]; BOARD_SIZE];
 
 pub struct Chessboard {
   chessboard: ChessboardType,
-  white_dead_pieces: Vec<Box<dyn Movable>>,
-  black_dead_pieces: Vec<Box<dyn Movable>>,
+  white_dead_pieces: Vec<Box<dyn Piece>>,
+  black_dead_pieces: Vec<Box<dyn Piece>>,
 }
 
 impl Chessboard {
@@ -47,7 +45,7 @@ impl Chessboard {
     first_row_pos: usize,
     pawns_row_pos: usize,
   ) -> () {
-    let first_row: [Option<Box<dyn Movable>>; BOARD_SIZE] = [
+    let first_row: [Option<Box<dyn Piece>>; BOARD_SIZE] = [
       Some(Box::new(Rook::new(color))),
       Some(Box::new(Knight::new(color))),
       Some(Box::new(Bishop::new(color))),
@@ -68,7 +66,7 @@ impl Chessboard {
   }
 
   pub fn is_clear_of_pieces_of_color(&self, color: Color, position: Position) -> bool {
-    let pos: &Option<Box<dyn Movable>> = &self.chessboard[position.x()][position.y()];
+    let pos: &Option<Box<dyn Piece>> = &self.chessboard[position.x()][position.y()];
 
     if let Some(piece) = pos {
       if *piece.color() == color {

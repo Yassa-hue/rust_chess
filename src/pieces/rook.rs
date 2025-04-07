@@ -1,6 +1,8 @@
 use crate::pieces::traits::Movable;
 use crate::pieces::types::{Color, MoveOffsets};
 
+use super::Piece;
+
 #[derive(Clone, Copy)]
 pub struct Rook {
   color: Color,
@@ -12,12 +14,14 @@ impl Rook {
   }
 }
 
+impl Piece for Rook {
+  fn color(&self) -> &Color {
+    &self.color
+  }
+}
+
 impl Movable for Rook {
   fn get_move_offsets(&self) -> MoveOffsets {
     MoveOffsets::new_appliable_multiple(ROOK_MOVES.to_vec())
-  }
-
-  fn color(&self) -> &Color {
-    &self.color
   }
 }

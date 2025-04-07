@@ -1,10 +1,13 @@
-use crate::pieces::types::{Color, MoveOffsets, Position};
-use std::fmt::Display;
+use crate::{
+  pieces::types::{Color, MoveOffsets, Position},
+  presenters::Presenter,
+};
 
-pub trait Movable: Display {
-  fn get_move_offsets(&self) -> MoveOffsets;
-
+pub trait Piece: Presenter + Movable {
   fn color(&self) -> &Color;
+}
+pub trait Movable {
+  fn get_move_offsets(&self) -> MoveOffsets;
 
   fn get_valid_moves(&self, current_position: Position) -> Vec<Position> {
     let move_offsets = self.get_move_offsets();
