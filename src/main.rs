@@ -2,6 +2,7 @@ mod chessboard;
 mod game;
 mod pieces;
 mod presenters;
+mod tests;
 mod ui;
 
 use game::Game;

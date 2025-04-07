@@ -66,15 +66,43 @@ impl Chessboard {
   }
 
   pub fn is_clear_of_pieces_of_color(&self, color: Color, position: Position) -> bool {
-    let pos: &Option<Box<dyn Piece>> = &self.chessboard[position.x()][position.y()];
+    let pos = &self.chessboard[position.x()][position.y()];
 
-    if let Some(piece) = pos {
-      if *piece.color() == color {
-        return false;
-      }
+    match pos {
+      Some(piece) if *piece.color() == color => false,
+      _ => true,
+    }
+  }
+
+  pub fn move_piece(
+    &mut self,
+    piece_position: Position,
+    target_position: Position,
+    current_player_color: Color,
+  ) -> Result<(), String> {
+    if self.chessboard[piece_position.x()][piece_position.y()].is_none() {
+      return Err("No piece at the given position".to_string());
     }
 
-    return true;
+    if !self.can_player_move_piece_at(piece_position, current_player_color) {
+      return Err("Not your piece".to_string());
+    }
+
+    if !self.is_valid_path(piece_position, target_position, current_player_color) {
+      return Err("Invalid move".to_string());
+    }
+
+    // apply the move safly
+    let piece = self.chessboard[piece_position.x()][piece_position.y()]
+      .take()
+      .unwrap();
+
+    self.capture_piece(target_position);
+
+    self.chessboard[target_position.x()][target_position.y()] = Some(piece);
+    self.chessboard[piece_position.x()][piece_position.y()] = None;
+
+    return Ok(());
   }
 
   fn can_player_move_piece_at(&self, position: Position, player_color: Color) -> bool {
@@ -89,16 +117,12 @@ impl Chessboard {
     return false;
   }
 
-  fn is_valid_path(
+  pub fn is_valid_path(
     &self,
     start_pos: Position,
     final_distination: Position,
     player_color: Color,
   ) -> bool {
-    if !self.can_player_move_piece_at(start_pos, player_color) {
-      return false;
-    }
-
     let moving_piece = self.chessboard[start_pos.x()][start_pos.y()]
       .as_ref()
       .unwrap();
@@ -115,34 +139,29 @@ impl Chessboard {
     return true;
   }
 
-  pub fn move_piece(
-    &mut self,
-    piece_position: Position,
-    target_position: Position,
-    current_player_color: Color,
-  ) -> Result<(), String> {
-    if self.is_valid_path(piece_position, target_position, current_player_color) {
-      let piece = self.chessboard[piece_position.x()][piece_position.y()]
-        .take()
-        .unwrap();
-
-      if let Some(target_piece) = self.chessboard[target_position.x()][target_position.y()].take() {
-        if *target_piece.color() == Color::White {
-          self.white_dead_pieces.push(target_piece);
-        } else {
-          self.black_dead_pieces.push(target_piece);
-        }
+  fn capture_piece(&mut self, target_position: Position) {
+    if let Some(target_piece) = self.chessboard[target_position.x()][target_position.y()].take() {
+      if *target_piece.color() == Color::White {
+        self.white_dead_pieces.push(target_piece);
+      } else {
+        self.black_dead_pieces.push(target_piece);
       }
-
-      self.chessboard[target_position.x()][target_position.y()] = Some(piece);
-
-      return Ok(());
     }
-
-    Err("Invalid move".to_string())
   }
 
   pub fn chessboard(&self) -> &ChessboardType {
     &self.chessboard
+  }
+
+  // for testing purpose
+  #[allow(dead_code)]
+  pub fn black_dead_pieces(&self) -> &Vec<Box<dyn Piece>> {
+    &self.black_dead_pieces
+  }
+
+  // for testing purpose
+  #[allow(dead_code)]
+  pub fn white_dead_pieces(&self) -> &Vec<Box<dyn Piece>> {
+    &self.white_dead_pieces
   }
 }
