@@ -16,3 +16,6 @@ pub use queen::Queen;
 pub use rook::Rook;
 pub use traits::*;
 pub use types::*;
+
+#[cfg(test)]
+mod tests;

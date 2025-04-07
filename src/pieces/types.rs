@@ -23,7 +23,7 @@ impl PartialEq for Color {
   }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, Hash)]
 pub struct Position {
   x: usize,
   y: usize,

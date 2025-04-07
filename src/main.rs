@@ -6,7 +6,7 @@ mod ui;
 
 use game::Game;
 use pieces::Color;
-use ui::{cmd::CmdUI, GameUI};
+use ui::{GameUI, cmd::CmdUI};
 
 fn main() {
   let mut game = Game::new(Color::White);
