@@ -14,4 +14,6 @@ pub trait Movable {
 
     move_offsets.apply_offsets(current_position)
   }
+
+  fn is_movement_include_multible_steps(&self) -> bool;
 }

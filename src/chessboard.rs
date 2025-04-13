@@ -92,6 +92,16 @@ impl Chessboard {
       return Err("Invalid move".to_string());
     }
 
+    if self.chessboard[piece_position.x()][piece_position.y()]
+      .as_ref()
+      .unwrap()
+      .is_movement_include_multible_steps()
+    {
+      if !self.is_path_has_no_obstacles(piece_position, target_position) {
+        return Err("Path has obstacles".to_string());
+      }
+    }
+
     // apply the move safly
     let piece = self.chessboard[piece_position.x()][piece_position.y()]
       .take()
@@ -137,6 +147,21 @@ impl Chessboard {
     }
 
     return true;
+  }
+
+  fn is_path_has_no_obstacles(&self, piece_position: Position, target_position: Position) -> bool {
+    let movement_direction = piece_position.calculate_movement_direction(&target_position);
+
+    let mut current_position = piece_position + movement_direction;
+
+    while let Some(pos) = current_position {
+      if self.chessboard[pos.x()][pos.y()].is_some() {
+        return false;
+      }
+      current_position = pos + movement_direction;
+    }
+
+    true
   }
 
   fn capture_piece(&mut self, target_position: Position) {

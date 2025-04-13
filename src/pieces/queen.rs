@@ -32,4 +32,8 @@ impl Movable for Queen {
   fn get_move_offsets(&self) -> MoveOffsets {
     MoveOffsets::new_appliable_multiple(QUEEN_MOVES.to_vec())
   }
+
+  fn is_movement_include_multible_steps(&self) -> bool {
+    true
+  }
 }
