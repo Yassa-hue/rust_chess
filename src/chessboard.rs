@@ -1,11 +1,4 @@
-use crate::pieces::{BOARD_SIZE, Bishop, Color, King, Knight, Pawn, Piece, Position, Queen, Rook};
-use std::array::from_fn;
-
-const FIRST_WHITE_ROW_X_POS: usize = 0;
-const WHITE_POWNS_ROW_X_POS: usize = 1;
-
-const FIRST_BLACK_ROW_X_POS: usize = 7;
-const BLACK_POWNS_ROW_X_POS: usize = 6;
+use crate::pieces::{BOARD_SIZE, Color, Piece, Position};
 
 type ChessboardType = [[Option<Box<dyn Piece>>; BOARD_SIZE]; BOARD_SIZE];
 
@@ -16,52 +9,11 @@ pub struct Chessboard {
 }
 
 impl Chessboard {
-  pub fn new() -> Self {
-    let mut chessboard: ChessboardType = from_fn(|_| from_fn(|_| None));
-
-    Self::initialize_pieces(
-      &mut chessboard,
-      Color::White,
-      FIRST_WHITE_ROW_X_POS,
-      WHITE_POWNS_ROW_X_POS,
-    );
-    Self::initialize_pieces(
-      &mut chessboard,
-      Color::Black,
-      FIRST_BLACK_ROW_X_POS,
-      BLACK_POWNS_ROW_X_POS,
-    );
-
+  pub fn new(chessboard: ChessboardType) -> Self {
     Chessboard {
       chessboard,
       white_dead_pieces: vec![],
       black_dead_pieces: vec![],
-    }
-  }
-
-  fn initialize_pieces(
-    chessboard: &mut ChessboardType,
-    color: Color,
-    first_row_pos: usize,
-    pawns_row_pos: usize,
-  ) -> () {
-    let first_row: [Option<Box<dyn Piece>>; BOARD_SIZE] = [
-      Some(Box::new(Rook::new(color))),
-      Some(Box::new(Knight::new(color))),
-      Some(Box::new(Bishop::new(color))),
-      Some(Box::new(Queen::new(color))),
-      Some(Box::new(King::new(color))),
-      Some(Box::new(Bishop::new(color))),
-      Some(Box::new(Knight::new(color))),
-      Some(Box::new(Rook::new(color))),
-    ];
-
-    for (col, piece) in first_row.into_iter().enumerate() {
-      chessboard[first_row_pos][col] = piece;
-    }
-
-    for col in 0..BOARD_SIZE {
-      chessboard[pawns_row_pos][col] = Some(Box::new(Pawn::new(color)));
     }
   }
 

@@ -1,4 +1,5 @@
 use crate::chessboard::Chessboard;
+use crate::chessboard_factory::ChessboardFactory;
 use crate::pieces::types::{Color, Position};
 
 pub struct Game {
@@ -8,7 +9,8 @@ pub struct Game {
 
 impl Game {
   pub fn new(player_color: Color) -> Self {
-    let chessboard = Chessboard::new();
+    let board = ChessboardFactory::standard_board();
+    let chessboard = Chessboard::new(board);
     Game {
       player_color,
       chessboard,
