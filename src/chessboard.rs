@@ -1,13 +1,6 @@
-use crate::pieces::{BOARD_SIZE, Bishop, Color, King, Knight, Pawn, Piece, Position, Queen, Rook};
-use std::array::from_fn;
+use crate::pieces::{Color, Piece, Position};
 
-const FIRST_WHITE_ROW_X_POS: usize = 0;
-const WHITE_POWNS_ROW_X_POS: usize = 1;
-
-const FIRST_BLACK_ROW_X_POS: usize = 7;
-const BLACK_POWNS_ROW_X_POS: usize = 6;
-
-type ChessboardType = [[Option<Box<dyn Piece>>; BOARD_SIZE]; BOARD_SIZE];
+use crate::chessboard_factory::ChessboardType;
 
 pub struct Chessboard {
   chessboard: ChessboardType,
@@ -16,22 +9,7 @@ pub struct Chessboard {
 }
 
 impl Chessboard {
-  pub fn new() -> Self {
-    let mut chessboard: ChessboardType = from_fn(|_| from_fn(|_| None));
-
-    Self::initialize_pieces(
-      &mut chessboard,
-      Color::White,
-      FIRST_WHITE_ROW_X_POS,
-      WHITE_POWNS_ROW_X_POS,
-    );
-    Self::initialize_pieces(
-      &mut chessboard,
-      Color::Black,
-      FIRST_BLACK_ROW_X_POS,
-      BLACK_POWNS_ROW_X_POS,
-    );
-
+  pub fn new(chessboard: ChessboardType) -> Self {
     Chessboard {
       chessboard,
       white_dead_pieces: vec![],
@@ -39,40 +17,14 @@ impl Chessboard {
     }
   }
 
-  fn initialize_pieces(
-    chessboard: &mut ChessboardType,
-    color: Color,
-    first_row_pos: usize,
-    pawns_row_pos: usize,
-  ) -> () {
-    let first_row: [Option<Box<dyn Piece>>; BOARD_SIZE] = [
-      Some(Box::new(Rook::new(color))),
-      Some(Box::new(Knight::new(color))),
-      Some(Box::new(Bishop::new(color))),
-      Some(Box::new(Queen::new(color))),
-      Some(Box::new(King::new(color))),
-      Some(Box::new(Bishop::new(color))),
-      Some(Box::new(Knight::new(color))),
-      Some(Box::new(Rook::new(color))),
-    ];
+  // pub fn is_clear_of_pieces_of_color(&self, color: Color, position: Position) -> bool {
+  //   let pos = &self.chessboard[position.x()][position.y()];
 
-    for (col, piece) in first_row.into_iter().enumerate() {
-      chessboard[first_row_pos][col] = piece;
-    }
-
-    for col in 0..BOARD_SIZE {
-      chessboard[pawns_row_pos][col] = Some(Box::new(Pawn::new(color)));
-    }
-  }
-
-  pub fn is_clear_of_pieces_of_color(&self, color: Color, position: Position) -> bool {
-    let pos = &self.chessboard[position.x()][position.y()];
-
-    match pos {
-      Some(piece) if *piece.color() == color => false,
-      _ => true,
-    }
-  }
+  //   match pos {
+  //     Some(piece) if *piece.color() == color => false,
+  //     _ => true,
+  //   }
+  // }
 
   pub fn move_piece(
     &mut self,
@@ -88,9 +40,35 @@ impl Chessboard {
       return Err("Not your piece".to_string());
     }
 
-    if !self.is_valid_path(piece_position, target_position, current_player_color) {
+    let moving_piece = self.chessboard[piece_position.x()][piece_position.y()]
+      .as_ref()
+      .unwrap();
+
+    let can_step_into_postion = |pos: Position| {
+      if pos == target_position {
+        if let Some(piece) = &self.chessboard[pos.x()][pos.y()] {
+          *piece.color() != current_player_color
+        } else {
+          true
+        }
+      } else {
+        self.chessboard[pos.x()][pos.y()].is_none()
+      }
+    };
+
+    if !moving_piece.can_reach(piece_position, target_position, &can_step_into_postion) {
       return Err("Invalid move".to_string());
     }
+
+    // if self.chessboard[piece_position.x()][piece_position.y()]
+    //   .as_ref()
+    //   .unwrap()
+    //   .is_movement_include_multible_steps()
+    // {
+    //   if !self.is_path_has_no_obstacles(piece_position, target_position) {
+    //     return Err("Path has obstacles".to_string());
+    //   }
+    // }
 
     // apply the move safly
     let piece = self.chessboard[piece_position.x()][piece_position.y()]
@@ -117,27 +95,42 @@ impl Chessboard {
     return false;
   }
 
-  pub fn is_valid_path(
-    &self,
-    start_pos: Position,
-    final_distination: Position,
-    player_color: Color,
-  ) -> bool {
-    let moving_piece = self.chessboard[start_pos.x()][start_pos.y()]
-      .as_ref()
-      .unwrap();
+  // pub fn is_valid_path(
+  //   &self,
+  //   start_pos: Position,
+  //   final_distination: Position,
+  //   player_color: Color,
+  // ) -> bool {
+  //   let moving_piece = self.chessboard[start_pos.x()][start_pos.y()]
+  //     .as_ref()
+  //     .unwrap();
 
-    if !moving_piece
-      .get_valid_moves(start_pos)
-      .iter()
-      .filter(|position| self.is_clear_of_pieces_of_color(player_color, **position))
-      .any(|position| *position == final_distination)
-    {
-      return false;
-    }
+  // if !moving_piece
+  //   .get_valid_moves(start_pos)
+  //   .iter()
+  //   .filter(|position| self.is_clear_of_pieces_of_color(player_color, **position))
+  //   .any(|position| *position == final_distination)
+  // {
+  //   return false;
+  // }
 
-    return true;
-  }
+  // return true;
+  // }
+
+  // fn is_path_has_no_obstacles(&self, piece_position: Position, target_position: Position) -> bool {
+  //   let movement_direction = piece_position.calculate_movement_direction(&target_position);
+
+  //   let mut current_position = piece_position + movement_direction;
+
+  //   while let Some(pos) = current_position {
+  //     if self.chessboard[pos.x()][pos.y()].is_some() {
+  //       return false;
+  //     }
+  //     current_position = pos + movement_direction;
+  //   }
+
+  //   true
+  // }
 
   fn capture_piece(&mut self, target_position: Position) {
     if let Some(target_piece) = self.chessboard[target_position.x()][target_position.y()].take() {

@@ -29,6 +29,18 @@ pub struct Position {
   y: usize,
 }
 
+impl PartialOrd for Position {
+  fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    Some(self.cmp(other))
+  }
+}
+
+impl Ord for Position {
+  fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    (self.x, self.y).cmp(&(other.x, other.y))
+  }
+}
+
 impl Position {
   pub fn new(x: usize, y: usize) -> Self {
     Position { x, y }
@@ -44,8 +56,9 @@ impl Position {
 
   pub fn from_str(position: &str) -> Self {
     let chars: Vec<char> = position.chars().collect();
+
     let x = chars[0].to_digit(10).unwrap() as usize - 1;
-    let y = chars[1].to_digit(10).unwrap() as usize - 1;
+    let y = (chars[1] as u8 - b'A') as usize;
 
     Position::new(x, y)
   }
@@ -93,27 +106,36 @@ impl MoveOffsets {
     MoveOffsets::AppliableMultiple(offsets)
   }
 
-  pub fn apply_offsets(&self, current_position: Position) -> Vec<Position> {
+  pub fn construct_path(
+    &self,
+    current_position: Position,
+    target_position: Position,
+  ) -> Option<Vec<Position>> {
     match self {
-      MoveOffsets::AppliableOnce(offsets) => offsets
-        .iter()
-        .filter_map(|offset| current_position + *offset)
-        .collect(),
+      MoveOffsets::AppliableOnce(offsets) => {
+        if offsets.contains(&(
+          target_position.x as i32 - current_position.x as i32,
+          target_position.y as i32 - current_position.y as i32,
+        )) {
+          Some(vec![target_position])
+        } else {
+          None
+        }
+      }
       MoveOffsets::AppliableMultiple(offsets) => {
-        let mut positions = vec![];
         for offset in offsets {
-          let mut current_position = current_position;
-          loop {
-            match current_position + *offset {
-              Some(new_position) => {
-                positions.push(new_position);
-                current_position = new_position;
-              }
-              None => break,
+          let mut path = vec![];
+          let mut current = current_position;
+
+          while let Some(next) = current + *offset {
+            path.push(next);
+            if next == target_position {
+              return Some(path);
             }
+            current = next;
           }
         }
-        positions
+        None
       }
     }
   }

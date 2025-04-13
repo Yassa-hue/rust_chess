@@ -69,8 +69,7 @@ impl Presenter for Chessboard {
       for square in row.iter() {
         match square {
           Some(piece) => {
-            piece.render(); // Render piece using the render method
-            print!(" "); // Space between pieces
+            piece.render();
           }
           None => {
             print!(". "); // Empty square

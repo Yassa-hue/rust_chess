@@ -7,7 +7,20 @@ use crate::pieces::{Color, King, Position};
 fn test_king_moves_center() {
   let king = King::new(Color::White);
   let pos = Position::new(4, 4);
-  let moves = king.get_valid_moves(pos);
+
+  // Closure that simulates an empty board
+  let can_step_into = |_pos: Position| true;
+
+  let mut moves = Vec::new();
+
+  for file in 0..8 {
+    for rank in 0..8 {
+      let target = Position::new(file, rank);
+      if pos != target && king.can_reach(pos, target, &can_step_into) {
+        moves.push(target);
+      }
+    }
+  }
 
   let expected = vec![
     Position::new(5, 4),
@@ -30,7 +43,20 @@ fn test_king_moves_center() {
 fn test_king_moves_corner() {
   let king = King::new(Color::Black);
   let pos = Position::new(0, 0);
-  let moves = king.get_valid_moves(pos);
+
+  // Closure that simulates an empty board
+  let can_step_into = |_pos: Position| true;
+
+  let mut moves = Vec::new();
+
+  for file in 0..8 {
+    for rank in 0..8 {
+      let target = Position::new(file, rank);
+      if pos != target && king.can_reach(pos, target, &can_step_into) {
+        moves.push(target);
+      }
+    }
+  }
 
   let expected = vec![
     Position::new(1, 0),
