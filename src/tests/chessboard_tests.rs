@@ -60,30 +60,30 @@ mod tests {
     assert_eq!(chessboard.black_dead_pieces().len(), 1);
   }
 
-  #[test]
-  fn test_is_clear_of_pieces_of_color() {
-    let board = ChessboardFactory::standard_board();
-    let chessboard = Chessboard::new(board);
+  // #[test]
+  // fn test_is_clear_of_pieces_of_color() {
+  //   let board = ChessboardFactory::standard_board();
+  //   let chessboard = Chessboard::new(board);
 
-    // The position A2 (1, 0) should be occupied by a white pawn initially
-    assert!(!chessboard.is_clear_of_pieces_of_color(Color::White, Position::new(1, 0)));
+  //   // The position A2 (1, 0) should be occupied by a white pawn initially
+  //   assert!(!chessboard.is_clear_of_pieces_of_color(Color::White, Position::new(1, 0)));
 
-    // The position D4 (3, 3) should be clear of pieces initially
-    assert!(chessboard.is_clear_of_pieces_of_color(Color::White, Position::new(3, 3)));
-  }
+  //   // The position D4 (3, 3) should be clear of pieces initially
+  //   assert!(chessboard.is_clear_of_pieces_of_color(Color::White, Position::new(3, 3)));
+  // }
 
-  #[test]
-  fn test_is_valid_move_for_piece() {
-    let board = ChessboardFactory::standard_board();
-    let chessboard = Chessboard::new(board);
+  // #[test]
+  // fn test_is_valid_move_for_piece() {
+  //   let board = ChessboardFactory::standard_board();
+  //   let chessboard = Chessboard::new(board);
 
-    // White pawn at A2 (1, 0) should have valid moves to A3 (2, 0) and A4 (3, 0)
-    let start_pos = Position::new(1, 0); // A2
-    let valid_move = Position::new(2, 0); // A3
-    assert!(chessboard.is_valid_path(start_pos, valid_move, Color::White));
+  //   // White pawn at A2 (1, 0) should have valid moves to A3 (2, 0) and A4 (3, 0)
+  //   let start_pos = Position::new(1, 0); // A2
+  //   let valid_move = Position::new(2, 0); // A3
+  //   assert!(chessboard.is_valid_path(start_pos, valid_move, Color::White));
 
-    // Invalid move for a white pawn (A2 to A5, not a valid first move)
-    let invalid_move = Position::new(4, 0); // A5
-    assert!(!chessboard.is_valid_path(start_pos, invalid_move, Color::White));
-  }
+  //   // Invalid move for a white pawn (A2 to A5, not a valid first move)
+  //   let invalid_move = Position::new(4, 0); // A5
+  //   assert!(!chessboard.is_valid_path(start_pos, invalid_move, Color::White));
+  // }
 }

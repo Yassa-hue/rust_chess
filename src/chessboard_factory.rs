@@ -7,7 +7,7 @@ const WHITE_POWNS_ROW_X_POS: usize = 1;
 const FIRST_BLACK_ROW_X_POS: usize = 7;
 const BLACK_POWNS_ROW_X_POS: usize = 6;
 
-type ChessboardType = [[Option<Box<dyn Piece>>; BOARD_SIZE]; BOARD_SIZE];
+pub type ChessboardType = [[Option<Box<dyn Piece>>; BOARD_SIZE]; BOARD_SIZE];
 pub struct ChessboardFactory;
 
 impl ChessboardFactory {

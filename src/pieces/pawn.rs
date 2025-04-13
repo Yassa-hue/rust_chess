@@ -26,8 +26,4 @@ impl Movable for Pawn {
     };
     MoveOffsets::new_appliable_once(offsets)
   }
-
-  fn is_movement_include_multible_steps(&self) -> bool {
-    false
-  }
 }

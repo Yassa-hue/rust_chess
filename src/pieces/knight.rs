@@ -32,8 +32,4 @@ impl Movable for Knight {
   fn get_move_offsets(&self) -> MoveOffsets {
     MoveOffsets::new_appliable_once(KNIGHT_MOVE_OFFSETS.to_vec())
   }
-
-  fn is_movement_include_multible_steps(&self) -> bool {
-    false
-  }
 }

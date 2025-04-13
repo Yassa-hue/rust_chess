@@ -7,13 +7,36 @@ pub trait Piece: Presenter + Movable {
   fn color(&self) -> &Color;
 }
 pub trait Movable {
-  fn get_move_offsets(&self) -> MoveOffsets;
+  fn can_reach(
+    &self,
+    current_position: Position,
+    target_position: Position,
+    can_step_into_postion: &dyn Fn(Position) -> bool,
+  ) -> bool {
+    let path = self.get_path(current_position, target_position);
+    if path.is_none() {
+      return false;
+    }
 
-  fn get_valid_moves(&self, current_position: Position) -> Vec<Position> {
-    let move_offsets = self.get_move_offsets();
+    let path = path.unwrap();
 
-    move_offsets.apply_offsets(current_position)
+    for position in path.iter() {
+      if !can_step_into_postion(*position) {
+        return false;
+      }
+    }
+    true
   }
 
-  fn is_movement_include_multible_steps(&self) -> bool;
+  fn get_move_offsets(&self) -> MoveOffsets;
+
+  fn get_path(
+    &self,
+    current_position: Position,
+    target_position: Position,
+  ) -> Option<Vec<Position>> {
+    let move_offsets = self.get_move_offsets();
+
+    move_offsets.construct_path(current_position, target_position)
+  }
 }

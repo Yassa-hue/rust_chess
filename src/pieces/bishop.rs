@@ -23,8 +23,4 @@ impl Movable for Bishop {
   fn get_move_offsets(&self) -> MoveOffsets {
     MoveOffsets::new_appliable_multiple(BISHOP_MOVES.to_vec())
   }
-
-  fn is_movement_include_multible_steps(&self) -> bool {
-    true
-  }
 }

@@ -1,4 +1,4 @@
-use crate::pieces::{Color, MoveOffsets, MovementDirection, Position};
+use crate::pieces::{Color, Position, MoveOffsets};
 
 #[test]
 fn test_color_next() {
@@ -24,36 +24,6 @@ fn test_position_from_str() {
 }
 
 #[test]
-fn test_position_calculate_movement_direction_vertical() {
-  let pos1 = Position::new(3, 2);
-  let pos2 = Position::new(3, 5);
-
-  let direction = pos1.calculate_movement_direction(&pos2);
-  assert_eq!(direction.dx(), 0);
-  assert_eq!(direction.dy(), 1); // Moving downward
-}
-
-#[test]
-fn test_position_calculate_movement_direction_horizontal() {
-  let pos1 = Position::new(2, 3);
-  let pos2 = Position::new(5, 3);
-
-  let direction = pos1.calculate_movement_direction(&pos2);
-  assert_eq!(direction.dx(), 1); // Moving right
-  assert_eq!(direction.dy(), 0);
-}
-
-#[test]
-fn test_position_calculate_movement_direction_diagonal() {
-  let pos1 = Position::new(2, 3);
-  let pos2 = Position::new(5, 6);
-
-  let direction = pos1.calculate_movement_direction(&pos2);
-  assert_eq!(direction.dx(), 1); // Moving right
-  assert_eq!(direction.dy(), 1); // Moving down
-}
-
-#[test]
 fn test_position_add() {
   let pos = Position::new(3, 4);
 
@@ -70,54 +40,81 @@ fn test_position_add() {
 }
 
 #[test]
-fn test_position_add_movement_direction() {
-  let pos = Position::new(2, 2);
-  let direction = MovementDirection::new(1, 1);
-
-  // Test adding valid direction
-  let new_pos = pos + direction;
-  assert!(new_pos.is_some());
-  let new_pos = new_pos.unwrap();
-  assert_eq!(new_pos.x(), 3);
-  assert_eq!(new_pos.y(), 3);
-
-  // Test adding direction that goes out of bounds
-  let direction_out_of_bounds = MovementDirection::new(10, 10);
-  let new_pos = pos + direction_out_of_bounds;
-  assert!(new_pos.is_none());
-}
-
-#[test]
-fn test_move_offsets_apply_offsets_once() {
-  let position = Position::new(3, 3);
-  let offsets = vec![(1, 0), (0, 1)];
+fn test_appliable_once_valid_move() {
+  let offsets = vec![(1, 2), (-1, -2)];
   let move_offsets = MoveOffsets::new_appliable_once(offsets);
+  let current = Position::new(4, 4);
+  let target = Position::new(5, 6); // (5 - 4, 6 - 4) = (1, 2)
 
-  let result = move_offsets.apply_offsets(position);
-  let expected_positions = vec![
-    Position::new(4, 3), // Right
-    Position::new(3, 4), // Up
-  ];
-  assert_eq!(result.len(), 2);
-  assert!(result.contains(&expected_positions[0]));
-  assert!(result.contains(&expected_positions[1]));
+  let path = move_offsets.construct_path(current, target);
+  assert_eq!(path, Some(vec![target]));
 }
 
 #[test]
-fn test_move_offsets_apply_offsets_multiple() {
-  let position = Position::new(3, 3);
-  let offsets = vec![(1, 0), (0, 1)];
-  let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
+fn test_appliable_once_invalid_move() {
+  let offsets = vec![(1, 2), (-1, -2)];
+  let move_offsets = MoveOffsets::new_appliable_once(offsets);
+  let current = Position::new(4, 4);
+  let target = Position::new(6, 6); // (2, 2) not in offsets
 
-  let result = move_offsets.apply_offsets(position);
-  let expected_positions = vec![
-    Position::new(4, 3), // Right
-    Position::new(3, 4), // Up
-    Position::new(5, 3), // Right
-    Position::new(3, 5), // Up
-  ];
-  assert_eq!(result.len(), 4);
-  for expected in expected_positions {
-    assert!(result.contains(&expected));
-  }
+  let path = move_offsets.construct_path(current, target);
+  assert_eq!(path, None);
+}
+
+#[test]
+fn test_appliable_multiple_valid_straight_line() {
+  let offsets = vec![(0, 1)]; // moving right
+  let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
+  let current = Position::new(3, 3);
+  let target = Position::new(3, 6);
+
+  let path = move_offsets.construct_path(current, target);
+  assert_eq!(
+    path,
+    Some(vec![
+      Position::new(3, 4),
+      Position::new(3, 5),
+      Position::new(3, 6),
+    ])
+  );
+}
+
+#[test]
+fn test_appliable_multiple_valid_diagonal() {
+  let offsets = vec![(1, 1)];
+  let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
+  let current = Position::new(2, 2);
+  let target = Position::new(5, 5);
+
+  let path = move_offsets.construct_path(current, target);
+  assert_eq!(
+    path,
+    Some(vec![
+      Position::new(3, 3),
+      Position::new(4, 4),
+      Position::new(5, 5),
+    ])
+  );
+}
+
+#[test]
+fn test_appliable_multiple_not_on_path() {
+  let offsets = vec![(1, 0)]; // moving down only
+  let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
+  let current = Position::new(4, 4);
+  let target = Position::new(6, 6); // diagonal not reachable with (1, 0)
+
+  let path = move_offsets.construct_path(current, target);
+  assert_eq!(path, None);
+}
+
+#[test]
+fn test_appliable_multiple_same_position() {
+  let offsets = vec![(1, 0)];
+  let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
+  let current = Position::new(4, 4);
+  let target = Position::new(4, 4); // same as current
+
+  let path = move_offsets.construct_path(current, target);
+  assert_eq!(path, None);
 }
