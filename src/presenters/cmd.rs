@@ -83,6 +83,13 @@ impl Presenter for Chessboard {
       print!("{} ", c as char); // Print column labels (a-h)
     }
     println!(); // Newline for column labels
+
+    print!("White dead pieces: ");
+    self.white_dead_pieces().iter().for_each(|p| p.render());
+    println!();
+    print!("Black dead pieces: ");
+    self.black_dead_pieces().iter().for_each(|p| p.render());
+    println!();
   }
 }
 

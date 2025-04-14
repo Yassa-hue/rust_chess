@@ -31,7 +31,10 @@ impl Movable for Pawn {
     };
 
     // Pawns can move two squares forward from their starting position
-    if PAWN_X_START_POSITIONS.iter().any(|x| *x == current_position.x()) {
+    if PAWN_X_START_POSITIONS
+      .iter()
+      .any(|x| *x == current_position.x())
+    {
       MoveOffsets::new_appliable_twice(offsets)
     } else {
       // Pawns can only move one square forward otherwise
