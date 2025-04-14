@@ -6,7 +6,7 @@ use crate::pieces::{Color, Knight, Position};
 #[test]
 fn test_knight_moves_center() {
   let knight = Knight::new(Color::White);
-  let pos = Position::new(4, 4);
+  let pos = Position::new(4, 4).unwrap();
 
   // Closure that simulates an empty board
   let can_step_into = |_pos: Position| true;
@@ -15,7 +15,7 @@ fn test_knight_moves_center() {
 
   for file in 0..8 {
     for rank in 0..8 {
-      let target = Position::new(file, rank);
+      let target = Position::new(file, rank).unwrap();
       if pos != target && knight.can_reach(pos, target, &can_step_into) {
         moves.push(target);
       }
@@ -23,14 +23,14 @@ fn test_knight_moves_center() {
   }
 
   let expected = vec![
-    Position::new(6, 5),
-    Position::new(6, 3),
-    Position::new(2, 5),
-    Position::new(2, 3),
-    Position::new(5, 6),
-    Position::new(5, 2),
-    Position::new(3, 6),
-    Position::new(3, 2),
+    Position::new(6, 5).unwrap(),
+    Position::new(6, 3).unwrap(),
+    Position::new(2, 5).unwrap(),
+    Position::new(2, 3).unwrap(),
+    Position::new(5, 6).unwrap(),
+    Position::new(5, 2).unwrap(),
+    Position::new(3, 6).unwrap(),
+    Position::new(3, 2).unwrap(),
   ];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
@@ -42,7 +42,7 @@ fn test_knight_moves_center() {
 #[test]
 fn test_knight_moves_near_edge() {
   let knight = Knight::new(Color::Black);
-  let pos = Position::new(0, 0);
+  let pos = Position::new(0, 0).unwrap();
 
   // Closure that simulates an empty board
   let can_step_into = |_pos: Position| true;
@@ -51,14 +51,14 @@ fn test_knight_moves_near_edge() {
 
   for file in 0..8 {
     for rank in 0..8 {
-      let target = Position::new(file, rank);
+      let target = Position::new(file, rank).unwrap();
       if pos != target && knight.can_reach(pos, target, &can_step_into) {
         moves.push(target);
       }
     }
   }
 
-  let expected = vec![Position::new(2, 1), Position::new(1, 2)];
+  let expected = vec![Position::new(2, 1).unwrap(), Position::new(1, 2).unwrap()];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
   let expected_set: HashSet<_> = expected.into_iter().collect();

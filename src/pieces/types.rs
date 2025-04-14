@@ -42,8 +42,11 @@ impl Ord for Position {
 }
 
 impl Position {
-  pub fn new(x: usize, y: usize) -> Self {
-    Position { x, y }
+  pub fn new(x: usize, y: usize) -> Result<Self, ()> {
+    if x >= BOARD_SIZE || y >= BOARD_SIZE {
+      return Err(());
+    }
+    Ok(Position { x, y })
   }
 
   pub fn x(&self) -> usize {
@@ -54,13 +57,16 @@ impl Position {
     self.y
   }
 
-  pub fn from_str(position: &str) -> Self {
+  pub fn from_str(position: &str) -> Result<Self, String> {
+    if position.len() != 2 {
+      return Err("Invalid position format".to_string());
+    }
     let chars: Vec<char> = position.chars().collect();
 
     let x = chars[0].to_digit(10).unwrap() as usize - 1;
     let y = (chars[1] as u8 - b'A') as usize;
 
-    Position::new(x, y)
+    Position::new(x, y).map_err(|_| "Position out of bounds".to_string())
   }
 }
 

@@ -6,7 +6,7 @@ use std::collections::HashSet;
 #[test]
 fn test_white_pawn_initial_moves() {
   let pawn = Pawn::new(Color::White);
-  let position = Position::new(1, 4); // e2
+  let position = Position::new(1, 4).unwrap(); // e2
 
   // Closure that simulates an empty board
   let can_step_into = |_pos: Position| true;
@@ -16,7 +16,7 @@ fn test_white_pawn_initial_moves() {
   // Check for valid moves
   for file in 0..8 {
     for rank in 0..8 {
-      let target = Position::new(file, rank);
+      let target = Position::new(file, rank).unwrap();
       if position != target && pawn.can_reach(position, target, &can_step_into) {
         moves.push(target);
       }
@@ -24,8 +24,8 @@ fn test_white_pawn_initial_moves() {
   }
 
   let expected = vec![
-    Position::new(2, 4), // e3
-    Position::new(3, 4), // e4
+    Position::new(2, 4).unwrap(), // e3
+    Position::new(3, 4).unwrap(), // e4
   ];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
@@ -37,7 +37,7 @@ fn test_white_pawn_initial_moves() {
 #[test]
 fn test_black_pawn_initial_moves() {
   let pawn = Pawn::new(Color::Black);
-  let position = Position::new(6, 4); // e7
+  let position = Position::new(6, 4).unwrap(); // e7
 
   // Closure that simulates an empty board
   let can_step_into = |_pos: Position| true;
@@ -47,7 +47,7 @@ fn test_black_pawn_initial_moves() {
   // Check for valid moves
   for file in 0..8 {
     for rank in 0..8 {
-      let target = Position::new(file, rank);
+      let target = Position::new(file, rank).unwrap();
       if position != target && pawn.can_reach(position, target, &can_step_into) {
         moves.push(target);
       }
@@ -55,8 +55,8 @@ fn test_black_pawn_initial_moves() {
   }
 
   let expected = vec![
-    Position::new(5, 4), // e6
-    Position::new(4, 4), // e5
+    Position::new(5, 4).unwrap(), // e6
+    Position::new(4, 4).unwrap(), // e5
   ];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
@@ -68,7 +68,7 @@ fn test_black_pawn_initial_moves() {
 #[test]
 fn test_white_pawn_after_move() {
   let pawn = Pawn::new(Color::White);
-  let position = Position::new(2, 4); // e3
+  let position = Position::new(2, 4).unwrap(); // e3
 
   // Closure that simulates an empty board
   let can_step_into = |_pos: Position| true;
@@ -78,7 +78,7 @@ fn test_white_pawn_after_move() {
   // Check for valid moves
   for file in 0..8 {
     for rank in 0..8 {
-      let target = Position::new(file, rank);
+      let target = Position::new(file, rank).unwrap();
       if position != target && pawn.can_reach(position, target, &can_step_into) {
         moves.push(target);
       }
@@ -86,7 +86,7 @@ fn test_white_pawn_after_move() {
   }
 
   let expected = vec![
-    Position::new(3, 4), // e4
+    Position::new(3, 4).unwrap(), // e4
   ];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
@@ -98,7 +98,7 @@ fn test_white_pawn_after_move() {
 #[test]
 fn test_black_pawn_after_move() {
   let pawn = Pawn::new(Color::Black);
-  let position = Position::new(5, 4); // e6
+  let position = Position::new(5, 4).unwrap(); // e6
 
   // Closure that simulates an empty board
   let can_step_into = |_pos: Position| true;
@@ -108,7 +108,7 @@ fn test_black_pawn_after_move() {
   // Check for valid moves
   for file in 0..8 {
     for rank in 0..8 {
-      let target = Position::new(file, rank);
+      let target = Position::new(file, rank).unwrap();
       if position != target && pawn.can_reach(position, target, &can_step_into) {
         moves.push(target);
       }
@@ -116,7 +116,7 @@ fn test_black_pawn_after_move() {
   }
 
   let expected = vec![
-    Position::new(4, 4), // e5
+    Position::new(4, 4).unwrap(), // e5
   ];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
@@ -128,9 +128,9 @@ fn test_black_pawn_after_move() {
 #[test]
 fn test_white_pawn_can_reach_via_en_passant() {
   let pawn = Pawn::new(Color::White);
-  let current = Position::new(4, 4); // e5
-  let target_left = Position::new(5, 3); // d6
-  let target_right = Position::new(5, 5); // f6
+  let current = Position::new(4, 4).unwrap(); // e5
+  let target_left = Position::new(5, 3).unwrap(); // d6
+  let target_right = Position::new(5, 5).unwrap(); // f6
 
   assert_eq!(
     pawn.can_reach_via_special_move(current, target_left),
@@ -146,7 +146,7 @@ fn test_white_pawn_can_reach_via_en_passant() {
     ))
   );
 
-  let invalid_target = Position::new(5, 4); // e6
+  let invalid_target = Position::new(5, 4).unwrap(); // e6
   assert_eq!(
     pawn.can_reach_via_special_move(current, invalid_target),
     Err(())
@@ -156,9 +156,9 @@ fn test_white_pawn_can_reach_via_en_passant() {
 #[test]
 fn test_black_pawn_can_reach_via_en_passant() {
   let pawn = Pawn::new(Color::Black);
-  let current = Position::new(3, 4); // e4
-  let target_left = Position::new(2, 3); // d3
-  let target_right = Position::new(2, 5); // f3
+  let current = Position::new(3, 4).unwrap(); // e4
+  let target_left = Position::new(2, 3).unwrap(); // d3
+  let target_right = Position::new(2, 5).unwrap(); // f3
 
   assert_eq!(
     pawn.can_reach_via_special_move(current, target_left),
@@ -174,7 +174,7 @@ fn test_black_pawn_can_reach_via_en_passant() {
     ))
   );
 
-  let invalid_target = Position::new(2, 4); // e3
+  let invalid_target = Position::new(2, 4).unwrap(); // e3
   assert_eq!(
     pawn.can_reach_via_special_move(current, invalid_target),
     Err(())
@@ -184,15 +184,15 @@ fn test_black_pawn_can_reach_via_en_passant() {
 #[test]
 fn test_pawn_upgrade() {
   let pawn = Pawn::new(Color::White);
-  let position = Position::new(7, 4); // e7
+  let position = Position::new(7, 4).unwrap(); // e7
 
   assert_eq!(pawn.can_upgrade(position), true);
 
   let pawn = Pawn::new(Color::Black);
-  let position = Position::new(0, 4); // e1
+  let position = Position::new(0, 4).unwrap(); // e1
 
   assert_eq!(pawn.can_upgrade(position), true);
 
-  let invalid_position = Position::new(1, 4); // e2
+  let invalid_position = Position::new(1, 4).unwrap(); // e2
   assert_eq!(pawn.can_upgrade(invalid_position), false);
 }

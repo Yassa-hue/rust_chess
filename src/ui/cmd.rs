@@ -28,6 +28,19 @@ impl GameUI for CmdUI {
       let start_pos = Position::from_str(positions[0]);
       let end_pos = Position::from_str(positions[1]);
 
+      if start_pos.is_err() || end_pos.is_err() {
+        println!("Invalid position format. Please try again.");
+        continue;
+      }
+
+      let start_pos = start_pos.unwrap();
+      let end_pos = end_pos.unwrap();
+
+      if start_pos == end_pos {
+        println!("Start and end positions cannot be the same.");
+        continue;
+      }
+
       match game.play(start_pos, end_pos) {
         Ok(res) => {
           println!("Move successful!");

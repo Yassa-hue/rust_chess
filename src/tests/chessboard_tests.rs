@@ -12,8 +12,8 @@ mod tests {
     let mut chessboard = Chessboard::new(board);
 
     // White pawn moves from A2 to A3
-    let start_pos = Position::new(1, 0); // A2
-    let target_pos = Position::new(2, 0); // A3
+    let start_pos = Position::new(1, 0).unwrap(); // A2
+    let target_pos = Position::new(2, 0).unwrap(); // A3
 
     assert!(
       chessboard
@@ -30,8 +30,8 @@ mod tests {
     let mut chessboard = Chessboard::new(board);
 
     // Try to move a black pawn from A7 to A6 when it's white's turn
-    let start_pos = Position::new(6, 0); // A7
-    let target_pos = Position::new(5, 0); // A6
+    let start_pos = Position::new(6, 0).unwrap(); // A7
+    let target_pos = Position::new(5, 0).unwrap(); // A6
 
     let result = chessboard.move_piece(start_pos, target_pos, Color::White);
     assert!(result.is_err()); // Should fail, as it's white's turn
@@ -44,18 +44,30 @@ mod tests {
 
     // Move a pawn in front of the bishop to free it to move
     chessboard
-      .move_piece(Position::new(1, 3), Position::new(2, 3), Color::White)
+      .move_piece(
+        Position::new(1, 3).unwrap(),
+        Position::new(2, 3).unwrap(),
+        Color::White,
+      )
       .unwrap();
 
     // Move the black pawn from (6, 7) to (5, 7)
     chessboard
-      .move_piece(Position::new(6, 7), Position::new(5, 7), Color::Black)
+      .move_piece(
+        Position::new(6, 7).unwrap(),
+        Position::new(5, 7).unwrap(),
+        Color::Black,
+      )
       .unwrap();
 
     // Move the white piece from (0, 2) to (5, 7)
     // Assuming the piece at (0, 2) is a bishop (or another piece that can move like this)
     chessboard
-      .move_piece(Position::new(0, 2), Position::new(5, 7), Color::White)
+      .move_piece(
+        Position::new(0, 2).unwrap(),
+        Position::new(5, 7).unwrap(),
+        Color::White,
+      )
       .unwrap();
 
     // The bishop captures the pawn, so it should now be in the dead pieces list
@@ -72,7 +84,11 @@ mod tests {
 
     let mut chessboard = Chessboard::new(custom_board);
 
-    let result = chessboard.move_piece(Position::new(4, 4), Position::new(5, 3), Color::White);
+    let result = chessboard.move_piece(
+      Position::new(4, 4).unwrap(),
+      Position::new(5, 3).unwrap(),
+      Color::White,
+    );
 
     assert!(result.is_ok());
     assert!(chessboard.chessboard()[5][3].is_some()); // White pawn should be on d6
@@ -86,7 +102,11 @@ mod tests {
 
     let mut chessboard = Chessboard::new(custom_board);
 
-    let result = chessboard.move_piece(Position::new(6, 0), Position::new(7, 0), Color::White);
+    let result = chessboard.move_piece(
+      Position::new(6, 0).unwrap(),
+      Position::new(7, 0).unwrap(),
+      Color::White,
+    );
 
     assert!(matches!(result, Ok(MoveResult::CanUpgradePiece)));
   }
@@ -102,14 +122,18 @@ mod tests {
     let mut chessboard = Chessboard::new(custom_board);
 
     // Move white pawn from A7 to B8, capturing the black piece and triggering upgrade
-    let result = chessboard.move_piece(Position::new(6, 0), Position::new(7, 1), Color::White);
+    let result = chessboard.move_piece(
+      Position::new(6, 0).unwrap(),
+      Position::new(7, 1).unwrap(),
+      Color::White,
+    );
 
     assert!(matches!(result, Ok(MoveResult::CanUpgradePiece)));
     assert_eq!(chessboard.black_dead_pieces().len(), 1);
 
     // Perform upgrade with the captured black piece
     chessboard
-      .upgrade_piece(0, Color::Black, Position::new(7, 1))
+      .upgrade_piece(0, Color::Black, Position::new(7, 1).unwrap())
       .expect("Failed to upgrade piece");
 
     // Confirm the upgrade replaced the pawn on the board
@@ -118,7 +142,7 @@ mod tests {
       !chessboard.chessboard()[7][1]
         .as_ref()
         .unwrap()
-        .can_upgrade(Position::new(7, 1))
+        .can_upgrade(Position::new(7, 1).unwrap())
     ); // make sure it's not a pawn anymore
   }
 }

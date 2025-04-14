@@ -6,7 +6,7 @@ use crate::pieces::{Color, King, Position};
 #[test]
 fn test_king_moves_center() {
   let king = King::new(Color::White);
-  let pos = Position::new(4, 4);
+  let pos = Position::new(4, 4).unwrap();
 
   // Closure that simulates an empty board
   let can_step_into = |_pos: Position| true;
@@ -15,7 +15,7 @@ fn test_king_moves_center() {
 
   for file in 0..8 {
     for rank in 0..8 {
-      let target = Position::new(file, rank);
+      let target = Position::new(file, rank).unwrap();
       if pos != target && king.can_reach(pos, target, &can_step_into) {
         moves.push(target);
       }
@@ -23,14 +23,14 @@ fn test_king_moves_center() {
   }
 
   let expected = vec![
-    Position::new(5, 4),
-    Position::new(3, 4),
-    Position::new(4, 5),
-    Position::new(4, 3),
-    Position::new(5, 5),
-    Position::new(5, 3),
-    Position::new(3, 5),
-    Position::new(3, 3),
+    Position::new(5, 4).unwrap(),
+    Position::new(3, 4).unwrap(),
+    Position::new(4, 5).unwrap(),
+    Position::new(4, 3).unwrap(),
+    Position::new(5, 5).unwrap(),
+    Position::new(5, 3).unwrap(),
+    Position::new(3, 5).unwrap(),
+    Position::new(3, 3).unwrap(),
   ];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
@@ -42,7 +42,7 @@ fn test_king_moves_center() {
 #[test]
 fn test_king_moves_corner() {
   let king = King::new(Color::Black);
-  let pos = Position::new(0, 0);
+  let pos = Position::new(0, 0).unwrap();
 
   // Closure that simulates an empty board
   let can_step_into = |_pos: Position| true;
@@ -51,7 +51,7 @@ fn test_king_moves_corner() {
 
   for file in 0..8 {
     for rank in 0..8 {
-      let target = Position::new(file, rank);
+      let target = Position::new(file, rank).unwrap();
       if pos != target && king.can_reach(pos, target, &can_step_into) {
         moves.push(target);
       }
@@ -59,9 +59,9 @@ fn test_king_moves_corner() {
   }
 
   let expected = vec![
-    Position::new(1, 0),
-    Position::new(0, 1),
-    Position::new(1, 1),
+    Position::new(1, 0).unwrap(),
+    Position::new(0, 1).unwrap(),
+    Position::new(1, 1).unwrap(),
   ];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
