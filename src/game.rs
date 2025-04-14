@@ -37,6 +37,7 @@ impl Game {
   pub fn upgrade_piece(&mut self, piece_index: usize, upgrade_position: Position) {
     self
       .chessboard
+      // The current player color is the opponent's color because it's changed after a valid move
       .upgrade_piece(piece_index, self.player_color().next(), upgrade_position);
   }
 
