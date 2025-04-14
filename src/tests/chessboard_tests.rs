@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests {
-  use crate::chessboard::Chessboard;
+  use crate::chessboard::{Chessboard, MoveResult};
   use crate::chessboard_factory::{ChessboardFactory, ChessboardType};
-  use crate::pieces::Pawn;
   use crate::pieces::{Color, Position};
+  use crate::pieces::{Pawn, Queen};
   use std::array::from_fn;
 
   #[test]
@@ -77,5 +77,48 @@ mod tests {
     assert!(result.is_ok());
     assert!(chessboard.chessboard()[5][3].is_some()); // White pawn should be on d6
     assert_eq!(chessboard.black_dead_pieces().len(), 1); // Confirm capture
+  }
+
+  #[test]
+  fn test_pawn_upgrade_triggers_upgrade_result() {
+    let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
+    custom_board[6][0] = Some(Box::new(Pawn::new(Color::White)));
+
+    let mut chessboard = Chessboard::new(custom_board);
+
+    let result = chessboard.move_piece(Position::new(6, 0), Position::new(7, 0), Color::White);
+
+    assert!(matches!(result, Ok(MoveResult::CanUpgradePiece)));
+  }
+
+  #[test]
+  fn test_upgrade_piece_replaces_board_piece() {
+    let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
+
+    // Set up white pawn at 6, 0 (A7) and black pawn at 7, 1 (B8)
+    custom_board[6][0] = Some(Box::new(Pawn::new(Color::White)));
+    custom_board[7][1] = Some(Box::new(Queen::new(Color::Black)));
+
+    let mut chessboard = Chessboard::new(custom_board);
+
+    // Move white pawn from A7 to B8, capturing the black piece and triggering upgrade
+    let result = chessboard.move_piece(Position::new(6, 0), Position::new(7, 1), Color::White);
+
+    assert!(matches!(result, Ok(MoveResult::CanUpgradePiece)));
+    assert_eq!(chessboard.black_dead_pieces().len(), 1);
+
+    // Perform upgrade with the captured black piece
+    chessboard
+      .upgrade_piece(0, Color::Black, Position::new(7, 1))
+      .expect("Failed to upgrade piece");
+
+    // Confirm the upgrade replaced the pawn on the board
+    assert!(chessboard.chessboard()[7][1].is_some());
+    assert!(
+      !chessboard.chessboard()[7][1]
+        .as_ref()
+        .unwrap()
+        .can_upgrade(Position::new(7, 1))
+    ); // make sure it's not a pawn anymore
   }
 }

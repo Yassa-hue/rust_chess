@@ -8,6 +8,9 @@ const PAWN_X_START_POSITIONS: [usize; 2] = [
   6, // Black
 ];
 
+const WHITE_PAWN_UPGRADE_X_POSITION: usize = 7;
+const BLACK_PAWN_UPGRADE_X_POSITION: usize = 0;
+
 #[derive(Clone, Copy)]
 pub struct Pawn {
   color: Color,
@@ -74,5 +77,12 @@ impl Movable for Pawn {
     }
 
     Err(())
+  }
+
+  fn can_upgrade(&self, current_position: Position) -> bool {
+    match self.color {
+      Color::White => current_position.x() == WHITE_PAWN_UPGRADE_X_POSITION,
+      Color::Black => current_position.x() == BLACK_PAWN_UPGRADE_X_POSITION,
+    }
   }
 }

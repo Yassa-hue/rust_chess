@@ -43,4 +43,8 @@ pub trait Movable {
 
     move_offsets.construct_path(current_position, target_position)
   }
+
+  fn can_upgrade(&self, _: Position) -> bool {
+    false
+  }
 }

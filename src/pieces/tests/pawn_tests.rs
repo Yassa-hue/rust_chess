@@ -180,3 +180,19 @@ fn test_black_pawn_can_reach_via_en_passant() {
     Err(())
   );
 }
+
+#[test]
+fn test_pawn_upgrade() {
+  let pawn = Pawn::new(Color::White);
+  let position = Position::new(7, 4); // e7
+
+  assert_eq!(pawn.can_upgrade(position), true);
+
+  let pawn = Pawn::new(Color::Black);
+  let position = Position::new(0, 4); // e1
+
+  assert_eq!(pawn.can_upgrade(position), true);
+
+  let invalid_position = Position::new(1, 4); // e2
+  assert_eq!(pawn.can_upgrade(invalid_position), false);
+}
