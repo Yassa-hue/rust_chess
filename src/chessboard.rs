@@ -1,5 +1,7 @@
 use crate::chessboard_factory::ChessboardType;
-use crate::pieces::{Color, Piece, Position, SpecialMove, SpecialMoveValidationAction};
+use crate::pieces::{
+  Color, Piece, Position, SpecialMove, SpecialMoveValidationAction,
+};
 use std::collections::HashMap;
 
 pub enum MoveResult {
@@ -52,10 +54,14 @@ impl Chessboard {
       }
     };
 
-    let res = moving_piece.can_reach_via_special_move(piece_position, target_position);
+    let res =
+      moving_piece.can_reach_via_special_move(piece_position, target_position);
 
-    if !moving_piece.can_reach(piece_position, target_position, &can_step_into_postion)
-      && res.is_err()
+    if !moving_piece.can_reach(
+      piece_position,
+      target_position,
+      &can_step_into_postion,
+    ) && res.is_err()
     {
       return Err("Invalid move".to_string());
     }
@@ -113,13 +119,19 @@ impl Chessboard {
       return Err("Invalid index for dead pieces vector".to_string());
     }
 
-    let piece_to_upgrade = dead_pieces.remove(piece_index_in_dead_pieces_vector);
-    self.chessboard[target_position.x()][target_position.y()] = Some(piece_to_upgrade);
+    let piece_to_upgrade =
+      dead_pieces.remove(piece_index_in_dead_pieces_vector);
+    self.chessboard[target_position.x()][target_position.y()] =
+      Some(piece_to_upgrade);
 
     Ok(())
   }
 
-  fn can_player_move_piece_at(&self, position: Position, player_color: Color) -> bool {
+  fn can_player_move_piece_at(
+    &self,
+    position: Position,
+    player_color: Color,
+  ) -> bool {
     let piece = &self.chessboard[position.x()][position.y()];
 
     if let Some(piece) = piece {
@@ -132,7 +144,9 @@ impl Chessboard {
   }
 
   fn capture_piece(&mut self, target_position: Position) {
-    if let Some(target_piece) = self.chessboard[target_position.x()][target_position.y()].take() {
+    if let Some(target_piece) =
+      self.chessboard[target_position.x()][target_position.y()].take()
+    {
       if *target_piece.color() == Color::White {
         self.white_dead_pieces.push(target_piece);
       } else {
@@ -148,14 +162,19 @@ impl Chessboard {
     let mut special_move_validation_functions = HashMap::new();
     special_move_validation_functions.insert(
       SpecialMoveValidationAction::EnemyPieceExists,
-      |chessboard: &mut Chessboard, piece_position: Position, target_position: Position| {
-        if chessboard.chessboard[target_position.x()][target_position.y()].is_none() {
+      |chessboard: &mut Chessboard,
+       piece_position: Position,
+       target_position: Position| {
+        if chessboard.chessboard[target_position.x()][target_position.y()]
+          .is_none()
+        {
           return false;
         }
 
-        let target_piece = chessboard.chessboard[target_position.x()][target_position.y()]
-          .as_ref()
-          .unwrap();
+        let target_piece = chessboard.chessboard[target_position.x()]
+          [target_position.y()]
+        .as_ref()
+        .unwrap();
         if target_piece.color()
           == chessboard.chessboard[piece_position.x()][piece_position.y()]
             .as_ref()

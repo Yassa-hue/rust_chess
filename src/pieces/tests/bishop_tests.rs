@@ -13,7 +13,9 @@ fn test_bishop_moves_center() {
   for file in 0..8 {
     for rank in 0..8 {
       let target = Position::new(file, rank).unwrap();
-      if position != target && bishop.can_reach(position, target, &can_step_into) {
+      if position != target
+        && bishop.can_reach(position, target, &can_step_into)
+      {
         moves.push(target);
       }
     }
@@ -58,7 +60,9 @@ fn test_bishop_moves_from_corner() {
   for file in 0..8 {
     for rank in 0..8 {
       let target = Position::new(file, rank).unwrap();
-      if position != target && bishop.can_reach(position, target, &can_step_into) {
+      if position != target
+        && bishop.can_reach(position, target, &can_step_into)
+      {
         moves.push(target);
       }
     }

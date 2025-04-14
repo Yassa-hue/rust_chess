@@ -17,7 +17,8 @@ fn test_white_pawn_initial_moves() {
   for file in 0..8 {
     for rank in 0..8 {
       let target = Position::new(file, rank).unwrap();
-      if position != target && pawn.can_reach(position, target, &can_step_into) {
+      if position != target && pawn.can_reach(position, target, &can_step_into)
+      {
         moves.push(target);
       }
     }
@@ -48,7 +49,8 @@ fn test_black_pawn_initial_moves() {
   for file in 0..8 {
     for rank in 0..8 {
       let target = Position::new(file, rank).unwrap();
-      if position != target && pawn.can_reach(position, target, &can_step_into) {
+      if position != target && pawn.can_reach(position, target, &can_step_into)
+      {
         moves.push(target);
       }
     }
@@ -79,7 +81,8 @@ fn test_white_pawn_after_move() {
   for file in 0..8 {
     for rank in 0..8 {
       let target = Position::new(file, rank).unwrap();
-      if position != target && pawn.can_reach(position, target, &can_step_into) {
+      if position != target && pawn.can_reach(position, target, &can_step_into)
+      {
         moves.push(target);
       }
     }
@@ -109,7 +112,8 @@ fn test_black_pawn_after_move() {
   for file in 0..8 {
     for rank in 0..8 {
       let target = Position::new(file, rank).unwrap();
-      if position != target && pawn.can_reach(position, target, &can_step_into) {
+      if position != target && pawn.can_reach(position, target, &can_step_into)
+      {
         moves.push(target);
       }
     }

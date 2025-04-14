@@ -22,10 +22,11 @@ impl Game {
     piece_position: Position,
     target_position: Position,
   ) -> Result<MoveResult, String> {
-    match self
-      .chessboard
-      .move_piece(piece_position, target_position, self.player_color)
-    {
+    match self.chessboard.move_piece(
+      piece_position,
+      target_position,
+      self.player_color,
+    ) {
       Ok(res) => {
         self.player_color = self.player_color.next();
         Ok(res)

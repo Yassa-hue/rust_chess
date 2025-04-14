@@ -14,12 +14,20 @@ fn test_queen_moves_from_center() {
   // Horizontal and vertical
   for i in 0..8 {
     if i != pos.x() {
-      if queen.can_reach(pos, Position::new(i, pos.y()).unwrap(), &can_step_into) {
+      if queen.can_reach(
+        pos,
+        Position::new(i, pos.y()).unwrap(),
+        &can_step_into,
+      ) {
         moves.push(Position::new(i, pos.y()).unwrap());
       }
     }
     if i != pos.y() {
-      if queen.can_reach(pos, Position::new(pos.x(), i).unwrap(), &can_step_into) {
+      if queen.can_reach(
+        pos,
+        Position::new(pos.x(), i).unwrap(),
+        &can_step_into,
+      ) {
         moves.push(Position::new(pos.x(), i).unwrap());
       }
     }

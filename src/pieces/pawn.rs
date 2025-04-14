@@ -68,7 +68,9 @@ impl Movable for Pawn {
         let target_x = current_position.x() as i32 + offset.0;
         let target_y = current_position.y() as i32 + offset.1;
 
-        if target_x == target_position.x() as i32 && target_y == target_position.y() as i32 {
+        if target_x == target_position.x() as i32
+          && target_y == target_position.y() as i32
+        {
           return Ok(SpecialMove::EnPassant(
             SpecialMoveValidationAction::EnemyPieceExists,
           ));

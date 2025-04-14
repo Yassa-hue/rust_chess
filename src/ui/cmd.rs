@@ -46,7 +46,9 @@ impl GameUI for CmdUI {
           println!("Move successful!");
           match res {
             MoveResult::None => (),
-            MoveResult::CanUpgradePiece => self.handle_upgrade_piece(game, end_pos),
+            MoveResult::CanUpgradePiece => {
+              self.handle_upgrade_piece(game, end_pos)
+            }
           }
         }
         Err(e) => println!("Error: {}", e),
@@ -54,10 +56,16 @@ impl GameUI for CmdUI {
     }
   }
 
-  fn handle_upgrade_piece(&mut self, game: &mut Game, upgrade_position: Position) {
+  fn handle_upgrade_piece(
+    &mut self,
+    game: &mut Game,
+    upgrade_position: Position,
+  ) {
     println!("You can upgrade your piece!");
     loop {
-      println!("Enter the index of the dead piece you want to upgrade to (e.g., 0, 1, 2): ");
+      println!(
+        "Enter the index of the dead piece you want to upgrade to (e.g., 0, 1, 2): "
+      );
       let mut index_input = String::new();
       io::stdin()
         .read_line(&mut index_input)

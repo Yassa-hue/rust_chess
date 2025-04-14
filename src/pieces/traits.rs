@@ -28,7 +28,11 @@ pub trait Movable {
     true
   }
 
-  fn can_reach_via_special_move(&self, _: Position, _: Position) -> Result<SpecialMove, ()> {
+  fn can_reach_via_special_move(
+    &self,
+    _: Position,
+    _: Position,
+  ) -> Result<SpecialMove, ()> {
     Err(())
   }
 

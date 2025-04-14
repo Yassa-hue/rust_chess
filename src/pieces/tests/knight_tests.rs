@@ -58,7 +58,8 @@ fn test_knight_moves_near_edge() {
     }
   }
 
-  let expected = vec![Position::new(2, 1).unwrap(), Position::new(1, 2).unwrap()];
+  let expected =
+    vec![Position::new(2, 1).unwrap(), Position::new(1, 2).unwrap()];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
   let expected_set: HashSet<_> = expected.into_iter().collect();
