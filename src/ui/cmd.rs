@@ -1,3 +1,4 @@
+use crate::chessboard::MoveResult;
 use crate::game::Game;
 use crate::pieces::Position;
 use crate::presenters::Presenter;
@@ -28,9 +29,31 @@ impl GameUI for CmdUI {
       let end_pos = Position::from_str(positions[1]);
 
       match game.play(start_pos, end_pos) {
-        Ok(_) => println!("Move successful!"),
+        Ok(res) => {
+          println!("Move successful!");
+          match res {
+            MoveResult::None => (),
+            MoveResult::CanUpgradePiece => self.handle_upgrade_piece(game, end_pos),
+          }
+        }
         Err(e) => println!("Error: {}", e),
       }
     }
+  }
+
+  fn handle_upgrade_piece(&mut self, game: &mut Game, upgrade_position: Position) {
+    println!("You can upgrade your piece!");
+    println!("Enter the index of new piece type (e.g., Q for Queen, R for Rook): ");
+    let mut piece_input = String::new();
+    io::stdin()
+      .read_line(&mut piece_input)
+      .expect("Failed to read line");
+    let piece_index: usize = piece_input
+      .trim()
+      .to_string()
+      .parse()
+      .expect("Invalid input");
+
+    game.upgrade_piece(piece_index, upgrade_position);
   }
 }

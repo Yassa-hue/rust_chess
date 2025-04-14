@@ -2,6 +2,11 @@ use crate::chessboard_factory::ChessboardType;
 use crate::pieces::{Color, Piece, Position, SpecialMove, SpecialMoveValidationAction};
 use std::collections::HashMap;
 
+pub enum MoveResult {
+  None,
+  CanUpgradePiece,
+}
+
 pub struct Chessboard {
   chessboard: ChessboardType,
   white_dead_pieces: Vec<Box<dyn Piece>>,
@@ -22,7 +27,7 @@ impl Chessboard {
     piece_position: Position,
     target_position: Position,
     current_player_color: Color,
-  ) -> Result<(), String> {
+  ) -> Result<MoveResult, String> {
     if self.chessboard[piece_position.x()][piece_position.y()].is_none() {
       return Err("No piece at the given position".to_string());
     }
@@ -82,7 +87,32 @@ impl Chessboard {
     self.chessboard[target_position.x()][target_position.y()] = Some(piece);
     self.chessboard[piece_position.x()][piece_position.y()] = None;
 
-    return Ok(());
+    let piece = self.chessboard[target_position.x()][target_position.y()]
+      .as_ref()
+      .unwrap();
+
+    if piece.can_upgrade(target_position) {
+      return Ok(MoveResult::CanUpgradePiece);
+    }
+
+    return Ok(MoveResult::None);
+  }
+
+  pub fn upgrade_piece(
+    &mut self,
+    piece_index_in_dead_pieces_vector: usize,
+    current_player_color: Color,
+    target_position: Position,
+  ) {
+    let piece_to_upgrade = match current_player_color {
+      Color::White => self
+        .white_dead_pieces
+        .remove(piece_index_in_dead_pieces_vector),
+      Color::Black => self
+        .black_dead_pieces
+        .remove(piece_index_in_dead_pieces_vector),
+    };
+    self.chessboard[target_position.x()][target_position.y()] = Some(piece_to_upgrade);
   }
 
   fn can_player_move_piece_at(&self, position: Position, player_color: Color) -> bool {

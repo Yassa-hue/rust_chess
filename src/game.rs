@@ -1,4 +1,4 @@
-use crate::chessboard::Chessboard;
+use crate::chessboard::{Chessboard, MoveResult};
 use crate::chessboard_factory::ChessboardFactory;
 use crate::pieces::types::{Color, Position};
 
@@ -21,17 +21,23 @@ impl Game {
     &mut self,
     piece_position: Position,
     target_position: Position,
-  ) -> Result<(), String> {
+  ) -> Result<MoveResult, String> {
     match self
       .chessboard
       .move_piece(piece_position, target_position, self.player_color)
     {
-      Ok(_) => {
+      Ok(res) => {
         self.player_color = self.player_color.next();
-        Ok(())
+        Ok(res)
       }
       Err(e) => Err(e),
     }
+  }
+
+  pub fn upgrade_piece(&mut self, piece_index: usize, upgrade_position: Position) {
+    self
+      .chessboard
+      .upgrade_piece(piece_index, self.player_color().next(), upgrade_position);
   }
 
   pub fn chessboard(&self) -> &Chessboard {
