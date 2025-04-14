@@ -1,5 +1,7 @@
 use crate::pieces::traits::{Movable, Piece};
-use crate::pieces::types::{Color, MoveOffsets, Position};
+use crate::pieces::types::{
+  Color, MoveOffsets, Position, SpecialMove, SpecialMoveValidationAction,
+};
 
 const PAWN_X_START_POSITIONS: [usize; 2] = [
   1, // White
@@ -14,6 +16,15 @@ pub struct Pawn {
 impl Pawn {
   pub fn new(color: Color) -> Self {
     Pawn { color }
+  }
+
+  fn get_en_passant_move_offsets(&self) -> MoveOffsets {
+    let offsets = match self.color {
+      Color::White => vec![(1, -1), (1, 1)],
+      Color::Black => vec![(-1, -1), (-1, 1)],
+    };
+
+    MoveOffsets::new_appliable_once(offsets)
   }
 }
 
@@ -40,5 +51,28 @@ impl Movable for Pawn {
       // Pawns can only move one square forward otherwise
       MoveOffsets::new_appliable_once(offsets)
     }
+  }
+
+  fn can_reach_via_special_move(
+    &self,
+    current_position: Position,
+    target_position: Position,
+  ) -> Result<SpecialMove, ()> {
+    let move_offsets = self.get_en_passant_move_offsets();
+
+    if let MoveOffsets::AppliableOnce(offsets) = move_offsets {
+      for offset in offsets {
+        let target_x = current_position.x() as i32 + offset.0;
+        let target_y = current_position.y() as i32 + offset.1;
+
+        if target_x == target_position.x() as i32 && target_y == target_position.y() as i32 {
+          return Ok(SpecialMove::EnPassant(
+            SpecialMoveValidationAction::EnemyPieceExists,
+          ));
+        }
+      }
+    }
+
+    Err(())
   }
 }

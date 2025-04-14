@@ -1,8 +1,10 @@
 #[cfg(test)]
 mod tests {
   use crate::chessboard::Chessboard;
-  use crate::chessboard_factory::ChessboardFactory;
+  use crate::chessboard_factory::{ChessboardFactory, ChessboardType};
+  use crate::pieces::Pawn;
   use crate::pieces::{Color, Position};
+  use std::array::from_fn;
 
   #[test]
   fn test_move_piece_valid_move() {
@@ -60,30 +62,20 @@ mod tests {
     assert_eq!(chessboard.black_dead_pieces().len(), 1);
   }
 
-  // #[test]
-  // fn test_is_clear_of_pieces_of_color() {
-  //   let board = ChessboardFactory::standard_board();
-  //   let chessboard = Chessboard::new(board);
+  #[test]
+  fn test_en_passant_capture() {
+    // Custom board setup
+    let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
 
-  //   // The position A2 (1, 0) should be occupied by a white pawn initially
-  //   assert!(!chessboard.is_clear_of_pieces_of_color(Color::White, Position::new(1, 0)));
+    custom_board[4][4] = Some(Box::new(Pawn::new(Color::White)));
+    custom_board[5][3] = Some(Box::new(Pawn::new(Color::Black)));
 
-  //   // The position D4 (3, 3) should be clear of pieces initially
-  //   assert!(chessboard.is_clear_of_pieces_of_color(Color::White, Position::new(3, 3)));
-  // }
+    let mut chessboard = Chessboard::new(custom_board);
 
-  // #[test]
-  // fn test_is_valid_move_for_piece() {
-  //   let board = ChessboardFactory::standard_board();
-  //   let chessboard = Chessboard::new(board);
+    let result = chessboard.move_piece(Position::new(4, 4), Position::new(5, 3), Color::White);
 
-  //   // White pawn at A2 (1, 0) should have valid moves to A3 (2, 0) and A4 (3, 0)
-  //   let start_pos = Position::new(1, 0); // A2
-  //   let valid_move = Position::new(2, 0); // A3
-  //   assert!(chessboard.is_valid_path(start_pos, valid_move, Color::White));
-
-  //   // Invalid move for a white pawn (A2 to A5, not a valid first move)
-  //   let invalid_move = Position::new(4, 0); // A5
-  //   assert!(!chessboard.is_valid_path(start_pos, invalid_move, Color::White));
-  // }
+    assert!(result.is_ok());
+    assert!(chessboard.chessboard()[5][3].is_some()); // White pawn should be on d6
+    assert_eq!(chessboard.black_dead_pieces().len(), 1); // Confirm capture
+  }
 }

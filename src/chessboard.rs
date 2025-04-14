@@ -1,6 +1,6 @@
-use crate::pieces::{Color, Piece, Position};
-
 use crate::chessboard_factory::ChessboardType;
+use crate::pieces::{Color, Piece, Position, SpecialMove, SpecialMoveValidationAction};
+use std::collections::HashMap;
 
 pub struct Chessboard {
   chessboard: ChessboardType,
@@ -47,11 +47,32 @@ impl Chessboard {
       }
     };
 
-    if !moving_piece.can_reach(piece_position, target_position, &can_step_into_postion) {
+    let res = moving_piece.can_reach_via_special_move(piece_position, target_position);
+
+    if !moving_piece.can_reach(piece_position, target_position, &can_step_into_postion)
+      && res.is_err()
+    {
       return Err("Invalid move".to_string());
     }
 
-    // apply the move safly
+    let special_move_validation = match res {
+      Ok(special_move) => match special_move {
+        SpecialMove::EnPassant(action) => Some(action),
+      },
+      Err(_) => None,
+    };
+
+    match special_move_validation {
+      Some(validation_action) => {
+        let f = self.get_special_move_validation_action(validation_action);
+        if !f(self, piece_position, target_position) {
+          return Err("Invalid special move".to_string());
+        }
+      }
+      None => {}
+    }
+
+    // apply the move safely
     let piece = self.chessboard[piece_position.x()][piece_position.y()]
       .take()
       .unwrap();
@@ -84,6 +105,40 @@ impl Chessboard {
         self.black_dead_pieces.push(target_piece);
       }
     }
+  }
+
+  fn get_special_move_validation_action(
+    &self,
+    special_move_validation: SpecialMoveValidationAction,
+  ) -> Box<dyn Fn(&mut Chessboard, Position, Position) -> bool> {
+    let mut special_move_validation_functions = HashMap::new();
+    special_move_validation_functions.insert(
+      SpecialMoveValidationAction::EnemyPieceExists,
+      |chessboard: &mut Chessboard, piece_position: Position, target_position: Position| {
+        if chessboard.chessboard[target_position.x()][target_position.y()].is_none() {
+          return false;
+        }
+
+        let target_piece = chessboard.chessboard[target_position.x()][target_position.y()]
+          .as_ref()
+          .unwrap();
+        if target_piece.color()
+          == chessboard.chessboard[piece_position.x()][piece_position.y()]
+            .as_ref()
+            .unwrap()
+            .color()
+        {
+          return false;
+        }
+        true
+      },
+    );
+
+    Box::new(
+      special_move_validation_functions
+        .remove(&special_move_validation)
+        .unwrap(),
+    )
   }
 
   pub fn chessboard(&self) -> &ChessboardType {

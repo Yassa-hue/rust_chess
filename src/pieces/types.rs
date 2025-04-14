@@ -164,3 +164,12 @@ impl MoveOffsets {
     }
   }
 }
+
+#[derive(Hash, Eq, PartialEq, Debug, Clone, Copy)]
+pub enum SpecialMoveValidationAction {
+  EnemyPieceExists,
+}
+#[derive(Hash, Eq, PartialEq, Debug, Clone, Copy)]
+pub enum SpecialMove {
+  EnPassant(SpecialMoveValidationAction),
+}

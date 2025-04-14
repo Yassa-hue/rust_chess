@@ -1,5 +1,5 @@
 use crate::{
-  pieces::types::{Color, MoveOffsets, Position},
+  pieces::types::{Color, MoveOffsets, Position, SpecialMove},
   presenters::Presenter,
 };
 
@@ -26,6 +26,10 @@ pub trait Movable {
       }
     }
     true
+  }
+
+  fn can_reach_via_special_move(&self, _: Position, _: Position) -> Result<SpecialMove, ()> {
+    Err(())
   }
 
   fn get_move_offsets(&self, start_position: Position) -> MoveOffsets;
