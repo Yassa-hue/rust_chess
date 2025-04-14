@@ -34,11 +34,15 @@ impl Game {
     }
   }
 
-  pub fn upgrade_piece(&mut self, piece_index: usize, upgrade_position: Position) {
+  pub fn upgrade_piece(
+    &mut self,
+    piece_index: usize,
+    upgrade_position: Position,
+  ) -> Result<(), String> {
     self
       .chessboard
       // The current player color is the opponent's color because it's changed after a valid move
-      .upgrade_piece(piece_index, self.player_color().next(), upgrade_position);
+      .upgrade_piece(piece_index, self.player_color().next(), upgrade_position)
   }
 
   pub fn chessboard(&self) -> &Chessboard {

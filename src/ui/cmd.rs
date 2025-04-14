@@ -43,17 +43,27 @@ impl GameUI for CmdUI {
 
   fn handle_upgrade_piece(&mut self, game: &mut Game, upgrade_position: Position) {
     println!("You can upgrade your piece!");
-    println!("Enter the index of new piece type (e.g., Q for Queen, R for Rook): ");
-    let mut piece_input = String::new();
-    io::stdin()
-      .read_line(&mut piece_input)
-      .expect("Failed to read line");
-    let piece_index: usize = piece_input
-      .trim()
-      .to_string()
-      .parse()
-      .expect("Invalid input");
+    loop {
+      println!("Enter the index of the dead piece you want to upgrade to (e.g., 0, 1, 2): ");
+      let mut index_input = String::new();
+      io::stdin()
+        .read_line(&mut index_input)
+        .expect("Failed to read line");
 
-    game.upgrade_piece(piece_index, upgrade_position);
+      match index_input.trim().parse::<usize>() {
+        Ok(index) => {
+          if let Err(e) = game.upgrade_piece(index, upgrade_position) {
+            println!("Error: {}. Please try again.", e);
+            continue;
+          }
+
+          println!("Piece upgraded successfully!");
+          break;
+        }
+        Err(_) => {
+          println!("Invalid input. Please enter a valid index.");
+        }
+      }
+    }
   }
 }

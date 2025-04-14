@@ -108,7 +108,9 @@ mod tests {
     assert_eq!(chessboard.black_dead_pieces().len(), 1);
 
     // Perform upgrade with the captured black piece
-    chessboard.upgrade_piece(0, Color::Black, Position::new(7, 1));
+    chessboard
+      .upgrade_piece(0, Color::Black, Position::new(7, 1))
+      .expect("Failed to upgrade piece");
 
     // Confirm the upgrade replaced the pawn on the board
     assert!(chessboard.chessboard()[7][1].is_some());

@@ -103,16 +103,20 @@ impl Chessboard {
     piece_index_in_dead_pieces_vector: usize,
     current_player_color: Color,
     target_position: Position,
-  ) {
-    let piece_to_upgrade = match current_player_color {
-      Color::White => self
-        .white_dead_pieces
-        .remove(piece_index_in_dead_pieces_vector),
-      Color::Black => self
-        .black_dead_pieces
-        .remove(piece_index_in_dead_pieces_vector),
+  ) -> Result<(), String> {
+    let dead_pieces = match current_player_color {
+      Color::White => &mut self.white_dead_pieces,
+      Color::Black => &mut self.black_dead_pieces,
     };
+
+    if piece_index_in_dead_pieces_vector >= dead_pieces.len() {
+      return Err("Invalid index for dead pieces vector".to_string());
+    }
+
+    let piece_to_upgrade = dead_pieces.remove(piece_index_in_dead_pieces_vector);
     self.chessboard[target_position.x()][target_position.y()] = Some(piece_to_upgrade);
+
+    Ok(())
   }
 
   fn can_player_move_piece_at(&self, position: Position, player_color: Color) -> bool {
