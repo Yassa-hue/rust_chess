@@ -24,6 +24,7 @@ fn test_white_pawn_initial_moves() {
 
   let expected = vec![
     Position::new(2, 4), // e3
+    Position::new(3, 4), // e4
   ];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();
@@ -54,6 +55,7 @@ fn test_black_pawn_initial_moves() {
 
   let expected = vec![
     Position::new(5, 4), // e6
+    Position::new(4, 4), // e5
   ];
 
   let moves_set: HashSet<_> = moves.into_iter().collect();

@@ -1,5 +1,10 @@
 use crate::pieces::traits::{Movable, Piece};
-use crate::pieces::types::{Color, MoveOffsets};
+use crate::pieces::types::{Color, MoveOffsets, Position};
+
+const PAWN_X_START_POSITIONS: [usize; 2] = [
+  1, // White
+  6, // Black
+];
 
 #[derive(Clone, Copy)]
 pub struct Pawn {
@@ -19,11 +24,18 @@ impl Piece for Pawn {
 }
 
 impl Movable for Pawn {
-  fn get_move_offsets(&self) -> MoveOffsets {
+  fn get_move_offsets(&self, current_position: Position) -> MoveOffsets {
     let offsets = match self.color {
       Color::White => vec![(1, 0)],
       Color::Black => vec![(-1, 0)],
     };
-    MoveOffsets::new_appliable_once(offsets)
+
+    // Pawns can move two squares forward from their starting position
+    if PAWN_X_START_POSITIONS.iter().any(|x| *x == current_position.x()) {
+      MoveOffsets::new_appliable_twice(offsets)
+    } else {
+      // Pawns can only move one square forward otherwise
+      MoveOffsets::new_appliable_once(offsets)
+    }
   }
 }

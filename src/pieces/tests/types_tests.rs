@@ -1,4 +1,4 @@
-use crate::pieces::{Color, Position, MoveOffsets};
+use crate::pieces::{Color, MoveOffsets, Position};
 
 #[test]
 fn test_color_next() {

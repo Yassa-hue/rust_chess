@@ -1,5 +1,5 @@
 use crate::pieces::traits::{Movable, Piece};
-use crate::pieces::types::{Color, MoveOffsets};
+use crate::pieces::types::{Color, MoveOffsets, Position};
 
 #[derive(Clone, Copy)]
 pub struct Bishop {
@@ -20,7 +20,7 @@ impl Piece for Bishop {
 }
 
 impl Movable for Bishop {
-  fn get_move_offsets(&self) -> MoveOffsets {
+  fn get_move_offsets(&self, _: Position) -> MoveOffsets {
     MoveOffsets::new_appliable_multiple(BISHOP_MOVES.to_vec())
   }
 }

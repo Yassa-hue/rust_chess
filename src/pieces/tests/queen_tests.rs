@@ -63,7 +63,6 @@ fn test_queen_moves_from_center() {
   assert_eq!(moves_set, expected_set);
 }
 
-
 #[test]
 fn test_queen_moves_from_corner() {
   let queen = Queen::new(Color::Black);

@@ -1,5 +1,5 @@
 use crate::pieces::traits::Movable;
-use crate::pieces::types::{Color, MoveOffsets};
+use crate::pieces::types::{Color, MoveOffsets, Position};
 
 use super::Piece;
 
@@ -21,7 +21,7 @@ impl Piece for Rook {
 }
 
 impl Movable for Rook {
-  fn get_move_offsets(&self) -> MoveOffsets {
+  fn get_move_offsets(&self, _: Position) -> MoveOffsets {
     MoveOffsets::new_appliable_multiple(ROOK_MOVES.to_vec())
   }
 }

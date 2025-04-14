@@ -28,14 +28,14 @@ pub trait Movable {
     true
   }
 
-  fn get_move_offsets(&self) -> MoveOffsets;
+  fn get_move_offsets(&self, start_position: Position) -> MoveOffsets;
 
   fn get_path(
     &self,
     current_position: Position,
     target_position: Position,
   ) -> Option<Vec<Position>> {
-    let move_offsets = self.get_move_offsets();
+    let move_offsets = self.get_move_offsets(current_position);
 
     move_offsets.construct_path(current_position, target_position)
   }

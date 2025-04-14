@@ -94,6 +94,7 @@ impl PartialEq for Position {
 
 pub enum MoveOffsets {
   AppliableOnce(Vec<(i32, i32)>),
+  AppliableTwice(Vec<(i32, i32)>), // Only for Pawn
   AppliableMultiple(Vec<(i32, i32)>),
 }
 
@@ -104,6 +105,10 @@ impl MoveOffsets {
 
   pub fn new_appliable_multiple(offsets: Vec<(i32, i32)>) -> Self {
     MoveOffsets::AppliableMultiple(offsets)
+  }
+
+  pub fn new_appliable_twice(offsets: Vec<(i32, i32)>) -> Self {
+    MoveOffsets::AppliableTwice(offsets)
   }
 
   pub fn construct_path(
@@ -121,6 +126,25 @@ impl MoveOffsets {
         } else {
           None
         }
+      }
+      MoveOffsets::AppliableTwice(offsets) => {
+        for offset in offsets {
+          let mut path = vec![];
+          let mut current = current_position;
+
+          for _ in 0..2 {
+            if let Some(next) = current + *offset {
+              path.push(next);
+              if next == target_position {
+                return Some(path);
+              }
+              current = next;
+            } else {
+              break;
+            }
+          }
+        }
+        None
       }
       MoveOffsets::AppliableMultiple(offsets) => {
         for offset in offsets {
