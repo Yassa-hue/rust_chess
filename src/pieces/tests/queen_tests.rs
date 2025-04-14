@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
+use crate::pieces::queen::Queen;
 use crate::pieces::traits::Movable;
-use crate::pieces::{Color, Position, Queen};
+use crate::pieces::types::{color::Color, position::Position};
 
 #[test]
 fn test_queen_moves_from_center() {

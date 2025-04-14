@@ -2,7 +2,7 @@
 mod tests {
   use crate::chessboard::{Chessboard, MoveResult};
   use crate::chessboard_factory::{ChessboardFactory, ChessboardType};
-  use crate::pieces::{Color, Position};
+  use crate::pieces::types::{color::Color, position::Position};
   use crate::pieces::{Pawn, Queen};
   use std::array::from_fn;
 

@@ -1,13 +1,19 @@
+use crate::pieces::Piece;
 use crate::pieces::traits::Movable;
-use crate::pieces::types::{Color, MoveOffsets, Position};
-
-use super::Piece;
+use crate::pieces::types::color::Color;
+use crate::pieces::types::move_direction::{MoveDirection, MoveOffsets};
+use crate::pieces::types::position::Position;
 
 #[derive(Clone, Copy)]
 pub struct Rook {
   color: Color,
 }
-const ROOK_MOVES: [(i32, i32); 4] = [(1, 0), (-1, 0), (0, 1), (0, -1)];
+const ROOK_MOVES: [MoveDirection; 4] = [
+  MoveDirection::Up,
+  MoveDirection::Down,
+  MoveDirection::Left,
+  MoveDirection::Right,
+];
 impl Rook {
   pub fn new(color: Color) -> Self {
     Rook { color }

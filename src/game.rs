@@ -1,6 +1,7 @@
 use crate::chessboard::{Chessboard, MoveResult};
 use crate::chessboard_factory::ChessboardFactory;
-use crate::pieces::types::{Color, Position};
+use crate::pieces::types::color::Color;
+use crate::pieces::types::position::Position;
 
 pub struct Game {
   player_color: Color,

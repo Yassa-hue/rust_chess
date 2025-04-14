@@ -3,7 +3,9 @@ use std::fmt;
 use crate::game::Game;
 use crate::{
   chessboard::Chessboard,
-  pieces::{Bishop, Color, King, Knight, Pawn, Piece, Queen, Rook},
+  pieces::{
+    Bishop, King, Knight, Pawn, Piece, Queen, Rook, types::color::Color,
+  },
 };
 
 use super::Presenter;

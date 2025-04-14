@@ -8,9 +8,6 @@ pub mod pawn;
 pub mod queen;
 pub mod rook;
 
-#[cfg(test)]
-pub mod tests;
-
 pub use bishop::Bishop;
 pub use king::King;
 pub use knight::Knight;
@@ -18,4 +15,8 @@ pub use pawn::Pawn;
 pub use queen::Queen;
 pub use rook::Rook;
 pub use traits::*;
+#[allow(unused_imports)] // for testing purposes
 pub use types::*;
+
+#[cfg(test)]
+pub mod tests;

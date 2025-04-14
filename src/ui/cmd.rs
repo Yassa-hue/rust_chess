@@ -1,6 +1,6 @@
 use crate::chessboard::MoveResult;
 use crate::game::Game;
-use crate::pieces::Position;
+use crate::pieces::types::position::Position;
 use crate::presenters::Presenter;
 use crate::ui::GameUI;
 use std::io;

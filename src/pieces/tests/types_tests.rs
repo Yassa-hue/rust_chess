@@ -1,4 +1,6 @@
-use crate::pieces::{Color, MoveOffsets, Position};
+use crate::pieces::types::color::Color;
+use crate::pieces::types::move_direction::{MoveDirection, MoveOffsets};
+use crate::pieces::types::position::Position;
 
 #[test]
 fn test_color_next() {
@@ -41,10 +43,11 @@ fn test_position_add() {
 
 #[test]
 fn test_appliable_once_valid_move() {
-  let offsets = vec![(1, 2), (-1, -2)];
-  let move_offsets = MoveOffsets::new_appliable_once(offsets);
+  let move_directions =
+    vec![MoveDirection::KnightUpRight, MoveDirection::KnightDownRight];
+  let move_offsets = MoveOffsets::new_appliable_once(move_directions);
   let current = Position::new(4, 4).unwrap();
-  let target = Position::new(5, 6).unwrap(); // (5 - 4, 6 - 4) = (1, 2)
+  let target = Position::new(6, 5).unwrap(); // KnightUpRight
 
   let path = move_offsets.construct_path(current, target);
   assert_eq!(path, Some(vec![target]));
@@ -52,10 +55,11 @@ fn test_appliable_once_valid_move() {
 
 #[test]
 fn test_appliable_once_invalid_move() {
-  let offsets = vec![(1, 2), (-1, -2)];
+  let offsets =
+    vec![MoveDirection::KnightUpRight, MoveDirection::KnightDownLeft];
   let move_offsets = MoveOffsets::new_appliable_once(offsets);
   let current = Position::new(4, 4).unwrap();
-  let target = Position::new(6, 6).unwrap(); // (2, 2) not in offsets
+  let target = Position::new(6, 6).unwrap(); // Not a valid knight move
 
   let path = move_offsets.construct_path(current, target);
   assert_eq!(path, None);
@@ -63,7 +67,7 @@ fn test_appliable_once_invalid_move() {
 
 #[test]
 fn test_appliable_multiple_valid_straight_line() {
-  let offsets = vec![(0, 1)]; // moving right
+  let offsets = vec![MoveDirection::Right]; // moving right
   let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
   let current = Position::new(3, 3).unwrap();
   let target = Position::new(3, 6).unwrap();
@@ -81,7 +85,7 @@ fn test_appliable_multiple_valid_straight_line() {
 
 #[test]
 fn test_appliable_multiple_valid_diagonal() {
-  let offsets = vec![(1, 1)];
+  let offsets = vec![MoveDirection::DownRight];
   let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
   let current = Position::new(2, 2).unwrap();
   let target = Position::new(5, 5).unwrap();
@@ -99,10 +103,10 @@ fn test_appliable_multiple_valid_diagonal() {
 
 #[test]
 fn test_appliable_multiple_not_on_path() {
-  let offsets = vec![(1, 0)]; // moving down only
+  let offsets = vec![MoveDirection::Down]; // moving down only
   let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
   let current = Position::new(4, 4).unwrap();
-  let target = Position::new(6, 6).unwrap(); // diagonal not reachable with (1, 0)
+  let target = Position::new(6, 6).unwrap(); // diagonal not reachable with Down
 
   let path = move_offsets.construct_path(current, target);
   assert_eq!(path, None);
@@ -110,7 +114,7 @@ fn test_appliable_multiple_not_on_path() {
 
 #[test]
 fn test_appliable_multiple_same_position() {
-  let offsets = vec![(1, 0)];
+  let offsets = vec![MoveDirection::Down];
   let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
   let current = Position::new(4, 4).unwrap();
   let target = Position::new(4, 4).unwrap(); // same as current

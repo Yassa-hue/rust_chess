@@ -1,7 +1,7 @@
 pub mod cmd;
 
 use crate::game::Game;
-use crate::pieces::types::Position;
+use crate::pieces::types::position::Position;
 
 pub trait GameUI {
   fn start_game_loop(&mut self, game: &mut Game);

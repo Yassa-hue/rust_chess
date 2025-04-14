@@ -7,7 +7,7 @@ mod tests;
 mod ui;
 
 use game::Game;
-use pieces::Color;
+use pieces::types::color::Color;
 use ui::{GameUI, cmd::CmdUI};
 
 fn main() {

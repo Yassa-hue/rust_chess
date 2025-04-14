@@ -1,7 +1,9 @@
 use crate::pieces::traits::{Movable, Piece};
-use crate::pieces::types::{
-  Color, MoveOffsets, Position, SpecialMove, SpecialMoveValidationAction,
+use crate::pieces::types::color::Color;
+use crate::pieces::types::move_direction::{
+  MoveDirection, MoveOffsets, SpecialMove, SpecialMoveValidationAction,
 };
+use crate::pieces::types::position::Position;
 
 const PAWN_X_START_POSITIONS: [usize; 2] = [
   1, // White
@@ -23,8 +25,8 @@ impl Pawn {
 
   fn get_en_passant_move_offsets(&self) -> MoveOffsets {
     let offsets = match self.color {
-      Color::White => vec![(1, -1), (1, 1)],
-      Color::Black => vec![(-1, -1), (-1, 1)],
+      Color::White => vec![MoveDirection::DownLeft, MoveDirection::DownRight],
+      Color::Black => vec![MoveDirection::UpLeft, MoveDirection::UpRight],
     };
 
     MoveOffsets::new_appliable_once(offsets)
@@ -40,8 +42,8 @@ impl Piece for Pawn {
 impl Movable for Pawn {
   fn get_move_offsets(&self, current_position: Position) -> MoveOffsets {
     let offsets = match self.color {
-      Color::White => vec![(1, 0)],
-      Color::Black => vec![(-1, 0)],
+      Color::White => vec![MoveDirection::Down],
+      Color::Black => vec![MoveDirection::Up],
     };
 
     // Pawns can move two squares forward from their starting position
@@ -63,10 +65,12 @@ impl Movable for Pawn {
   ) -> Result<SpecialMove, ()> {
     let move_offsets = self.get_en_passant_move_offsets();
 
-    if let MoveOffsets::AppliableOnce(offsets) = move_offsets {
-      for offset in offsets {
-        let target_x = current_position.x() as i32 + offset.0;
-        let target_y = current_position.y() as i32 + offset.1;
+    if let MoveOffsets::AppliableOnce(move_directions) = move_offsets {
+      for move_direction in move_directions {
+        let target_x =
+          current_position.x() as i32 + move_direction.to_offset().dx;
+        let target_y =
+          current_position.y() as i32 + move_direction.to_offset().dy;
 
         if target_x == target_position.x() as i32
           && target_y == target_position.y() as i32

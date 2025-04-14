@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
+use crate::pieces::rook::Rook;
 use crate::pieces::traits::Movable;
-use crate::pieces::{Color, Position, Rook};
+use crate::pieces::types::{color::Color, position::Position};
 
 #[test]
 fn test_rook_moves_center() {

@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
+use crate::pieces::king::King;
 use crate::pieces::traits::Movable;
-use crate::pieces::{Color, King, Position};
+use crate::pieces::types::{color::Color, position::Position};
 
 #[test]
 fn test_king_moves_center() {

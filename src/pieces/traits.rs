@@ -1,7 +1,7 @@
-use crate::{
-  pieces::types::{Color, MoveOffsets, Position, SpecialMove},
-  presenters::Presenter,
-};
+use crate::pieces::types::color::Color;
+use crate::pieces::types::move_direction::{MoveOffsets, SpecialMove};
+use crate::pieces::types::position::Position;
+use crate::presenters::Presenter;
 
 pub trait Piece: Presenter + Movable {
   fn color(&self) -> &Color;

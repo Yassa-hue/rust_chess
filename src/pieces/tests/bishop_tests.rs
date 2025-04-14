@@ -1,5 +1,6 @@
+use crate::pieces::bishop::Bishop;
 use crate::pieces::traits::Movable;
-use crate::pieces::{Bishop, Color, Position};
+use crate::pieces::types::{color::Color, position::Position};
 
 #[test]
 fn test_bishop_moves_center() {

@@ -1,6 +1,6 @@
-use crate::pieces::{
-  BOARD_SIZE, Bishop, Color, King, Knight, Pawn, Piece, Queen, Rook,
-};
+use crate::pieces::types::BOARD_SIZE;
+use crate::pieces::types::color::Color;
+use crate::pieces::{Bishop, King, Knight, Pawn, Piece, Queen, Rook};
 use std::array::from_fn;
 
 const FIRST_WHITE_ROW_X_POS: usize = 0;

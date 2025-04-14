@@ -1,7 +1,10 @@
 use crate::chessboard_factory::ChessboardType;
-use crate::pieces::{
-  Color, Piece, Position, SpecialMove, SpecialMoveValidationAction,
+use crate::pieces::Piece;
+use crate::pieces::types::color::Color;
+use crate::pieces::types::move_direction::{
+  SpecialMove, SpecialMoveValidationAction,
 };
+use crate::pieces::types::position::Position;
 use std::collections::HashMap;
 
 pub enum MoveResult {

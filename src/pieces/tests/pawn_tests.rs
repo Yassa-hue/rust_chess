@@ -1,6 +1,9 @@
+use crate::pieces::pawn::Pawn;
 use crate::pieces::traits::Movable;
-use crate::pieces::types::{SpecialMove, SpecialMoveValidationAction};
-use crate::pieces::{Color, Pawn, Position};
+use crate::pieces::types::{
+  color::Color, move_direction::SpecialMove,
+  move_direction::SpecialMoveValidationAction, position::Position,
+};
 use std::collections::HashSet;
 
 #[test]
@@ -78,9 +81,9 @@ fn test_white_pawn_after_move() {
   let mut moves = Vec::new();
 
   // Check for valid moves
-  for file in 0..8 {
-    for rank in 0..8 {
-      let target = Position::new(file, rank).unwrap();
+  for x in 0..8 {
+    for y in 0..8 {
+      let target = Position::new(x, y).unwrap();
       if position != target && pawn.can_reach(position, target, &can_step_into)
       {
         moves.push(target);

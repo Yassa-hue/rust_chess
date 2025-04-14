@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
+use crate::pieces::knight::Knight;
 use crate::pieces::traits::Movable;
-use crate::pieces::{Color, Knight, Position};
+use crate::pieces::types::{color::Color, position::Position};
 
 #[test]
 fn test_knight_moves_center() {

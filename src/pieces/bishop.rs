@@ -1,11 +1,18 @@
 use crate::pieces::traits::{Movable, Piece};
-use crate::pieces::types::{Color, MoveOffsets, Position};
+use crate::pieces::types::color::Color;
+use crate::pieces::types::move_direction::{MoveDirection, MoveOffsets};
+use crate::pieces::types::position::Position;
 
 #[derive(Clone, Copy)]
 pub struct Bishop {
   color: Color,
 }
-const BISHOP_MOVES: [(i32, i32); 4] = [(1, 1), (1, -1), (-1, 1), (-1, -1)];
+const BISHOP_MOVES: [MoveDirection; 4] = [
+  MoveDirection::UpRight,
+  MoveDirection::UpLeft,
+  MoveDirection::DownRight,
+  MoveDirection::DownLeft,
+];
 
 impl Bishop {
   pub fn new(color: Color) -> Self {
