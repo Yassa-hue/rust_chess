@@ -47,28 +47,6 @@ impl Position {
   }
 }
 
-impl std::ops::Add<(i32, i32)> for Position {
-  type Output = Option<Position>;
-
-  fn add(self, other: (i32, i32)) -> Option<Position> {
-    let new_x = self.x as i32 + other.0;
-    let new_y = self.y as i32 + other.1;
-
-    if new_x < 0 || new_y < 0 {
-      return None;
-    }
-
-    if new_x >= BOARD_SIZE as i32 || new_y >= BOARD_SIZE as i32 {
-      return None;
-    }
-
-    Some(Position {
-      x: new_x as usize,
-      y: new_y as usize,
-    })
-  }
-}
-
 impl PartialEq for Position {
   fn eq(&self, other: &Self) -> bool {
     self.x == other.x && self.y == other.y

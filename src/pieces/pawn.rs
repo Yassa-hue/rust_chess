@@ -67,10 +67,9 @@ impl Movable for Pawn {
 
     if let MoveOffsets::AppliableOnce(move_directions) = move_offsets {
       for move_direction in move_directions {
-        let target_x =
-          current_position.x() as i32 + move_direction.to_offset().dx;
-        let target_y =
-          current_position.y() as i32 + move_direction.to_offset().dy;
+        let offset = move_direction.to_offset();
+        let target_x = current_position.x() as i32 + offset.dx;
+        let target_y = current_position.y() as i32 + offset.dy;
 
         if target_x == target_position.x() as i32
           && target_y == target_position.y() as i32

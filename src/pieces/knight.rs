@@ -7,7 +7,8 @@ use crate::pieces::types::position::Position;
 pub struct Knight {
   color: Color,
 }
-const KNIGHT_MOVE_OFFSETS: [MoveDirection; 8] = [
+
+const KNIGHT_MOVES: [MoveDirection; 8] = [
   MoveDirection::KnightUpLeft,
   MoveDirection::KnightUpRight,
   MoveDirection::KnightDownLeft,
@@ -32,6 +33,6 @@ impl Piece for Knight {
 
 impl Movable for Knight {
   fn get_move_offsets(&self, _: Position) -> MoveOffsets {
-    MoveOffsets::new_appliable_once(KNIGHT_MOVE_OFFSETS.to_vec())
+    MoveOffsets::new_appliable_once(KNIGHT_MOVES.to_vec())
   }
 }

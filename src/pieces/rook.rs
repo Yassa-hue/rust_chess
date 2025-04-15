@@ -1,5 +1,4 @@
-use crate::pieces::Piece;
-use crate::pieces::traits::Movable;
+use crate::pieces::traits::{Movable, Piece};
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{MoveDirection, MoveOffsets};
 use crate::pieces::types::position::Position;
@@ -8,12 +7,14 @@ use crate::pieces::types::position::Position;
 pub struct Rook {
   color: Color,
 }
+
 const ROOK_MOVES: [MoveDirection; 4] = [
   MoveDirection::Up,
   MoveDirection::Down,
   MoveDirection::Left,
   MoveDirection::Right,
 ];
+
 impl Rook {
   pub fn new(color: Color) -> Self {
     Rook { color }

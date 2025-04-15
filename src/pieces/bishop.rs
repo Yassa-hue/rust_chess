@@ -7,6 +7,7 @@ use crate::pieces::types::position::Position;
 pub struct Bishop {
   color: Color,
 }
+
 const BISHOP_MOVES: [MoveDirection; 4] = [
   MoveDirection::UpRight,
   MoveDirection::UpLeft,

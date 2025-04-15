@@ -7,6 +7,7 @@ use crate::pieces::types::position::Position;
 pub struct Queen {
   color: Color,
 }
+
 const QUEEN_MOVES: [MoveDirection; 8] = [
   MoveDirection::Up,
   MoveDirection::Down,

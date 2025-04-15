@@ -1,5 +1,7 @@
 use crate::pieces::types::color::Color;
-use crate::pieces::types::move_direction::{MoveDirection, MoveOffsets};
+use crate::pieces::types::move_direction::{
+  MoveDirection, MoveDirectionOffset, MoveOffsets,
+};
 use crate::pieces::types::position::Position;
 
 #[test]
@@ -30,14 +32,14 @@ fn test_position_add() {
   let pos = Position::new(3, 4).unwrap();
 
   // Test adding valid offset
-  let new_pos = pos + (2, 2);
+  let new_pos = pos + MoveDirectionOffset { dx: 2, dy: 2 };
   assert!(new_pos.is_some());
   let new_pos = new_pos.unwrap();
   assert_eq!(new_pos.x(), 5);
   assert_eq!(new_pos.y(), 6);
 
   // Test adding invalid offset (out of bounds)
-  let new_pos = pos + (10, 10);
+  let new_pos = pos + MoveDirectionOffset { dx: 10, dy: 10 };
   assert!(new_pos.is_none());
 }
 
@@ -121,4 +123,48 @@ fn test_appliable_multiple_same_position() {
 
   let path = move_offsets.construct_path(current, target);
   assert_eq!(path, None);
+}
+
+#[test]
+fn test_move_direction_to_offset() {
+  assert_eq!(
+    MoveDirection::Up.to_offset(),
+    MoveDirectionOffset { dx: -1, dy: 0 }
+  );
+  assert_eq!(
+    MoveDirection::Down.to_offset(),
+    MoveDirectionOffset { dx: 1, dy: 0 }
+  );
+  assert_eq!(
+    MoveDirection::Left.to_offset(),
+    MoveDirectionOffset { dx: 0, dy: -1 }
+  );
+  assert_eq!(
+    MoveDirection::Right.to_offset(),
+    MoveDirectionOffset { dx: 0, dy: 1 }
+  );
+}
+
+#[test]
+fn test_move_direction_from_offset() {
+  assert_eq!(
+    MoveDirection::from_offset(MoveDirectionOffset { dx: -1, dy: 0 }),
+    Some(MoveDirection::Up)
+  );
+  assert_eq!(
+    MoveDirection::from_offset(MoveDirectionOffset { dx: 1, dy: 0 }),
+    Some(MoveDirection::Down)
+  );
+  assert_eq!(
+    MoveDirection::from_offset(MoveDirectionOffset { dx: 0, dy: -1 }),
+    Some(MoveDirection::Left)
+  );
+  assert_eq!(
+    MoveDirection::from_offset(MoveDirectionOffset { dx: 0, dy: 1 }),
+    Some(MoveDirection::Right)
+  );
+  assert_eq!(
+    MoveDirection::from_offset(MoveDirectionOffset { dx: 2, dy: 2 }),
+    None
+  );
 }
