@@ -26,16 +26,20 @@ pub struct Chessboard {
 }
 
 impl Chessboard {
-  pub fn new(chessboard: ChessboardType) -> Self {
+  pub fn new(
+    chessboard: ChessboardType,
+    white_dead_pieces: Vec<Box<dyn Piece>>,
+    black_dead_pieces: Vec<Box<dyn Piece>>,
+  ) -> Self {
     Chessboard {
       chessboard,
-      white_dead_pieces: Vec::new(),
-      black_dead_pieces: Vec::new(),
+      white_dead_pieces,
+      black_dead_pieces,
     }
   }
 
   pub fn empty() -> Self {
-    Self::new(from_fn(|_| from_fn(|_| None)))
+    Self::new(from_fn(|_| from_fn(|_| None)), Vec::new(), Vec::new())
   }
 
   pub fn standard() -> Self {

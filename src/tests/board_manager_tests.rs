@@ -3,6 +3,7 @@ mod tests {
   use crate::board_manager::BoardManager;
   use crate::chessboard::MoveResult;
   use crate::chessboard::{Chessboard, ChessboardType};
+  use crate::pieces::traits::Piece;
   use crate::pieces::types::{color::Color, position::Position};
   use crate::pieces::{Pawn, Queen};
   use std::array::from_fn;
@@ -83,7 +84,8 @@ mod tests {
     custom_board[4][4] = Some(Box::new(Pawn::new(Color::White)));
     custom_board[5][3] = Some(Box::new(Pawn::new(Color::Black)));
 
-    let mut board_manager = BoardManager::new(Chessboard::new(custom_board));
+    let mut board_manager =
+      BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
 
     let result = board_manager.move_piece(
       Position::new(4, 4).unwrap(),
@@ -101,7 +103,8 @@ mod tests {
     let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
     custom_board[6][0] = Some(Box::new(Pawn::new(Color::White)));
 
-    let mut board_manager = BoardManager::new(Chessboard::new(custom_board));
+    let mut board_manager =
+      BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
 
     let result = board_manager.move_piece(
       Position::new(6, 0).unwrap(),
@@ -120,7 +123,8 @@ mod tests {
     custom_board[6][0] = Some(Box::new(Pawn::new(Color::White)));
     custom_board[7][1] = Some(Box::new(Queen::new(Color::Black)));
 
-    let mut board_manager = BoardManager::new(Chessboard::new(custom_board));
+    let mut board_manager =
+      BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
 
     // Move white pawn from A7 to B8, capturing the black piece and triggering upgrade
     let result = board_manager.move_piece(
@@ -160,7 +164,8 @@ mod tests {
     // Place white rook at E1 (row 0, col 4)
     custom_board[0][4] = Some(Box::new(Rook::new(Color::White)));
 
-    let mut board_manager = BoardManager::new(Chessboard::new(custom_board));
+    let mut board_manager =
+      BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
 
     // Move rook from E1 to E7 (just before the king), to put the king in check
     let result = board_manager.move_piece(
@@ -170,5 +175,68 @@ mod tests {
     );
 
     assert!(matches!(result, Ok(MoveResult::CheckKing))); // Should result in check
+  }
+
+  #[test]
+  fn test_king_not_checked_after_safe_move() {
+    use crate::pieces::{King, Rook};
+
+    let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
+
+    custom_board[7][4] = Some(Box::new(King::new(Color::Black))); // Black king at E8
+    custom_board[0][0] = Some(Box::new(Rook::new(Color::White))); // White rook at A1
+
+    let mut board_manager =
+      BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
+
+    // Move rook to A2, not affecting the king
+    let result = board_manager.move_piece(
+      Position::new(0, 0).unwrap(),
+      Position::new(1, 0).unwrap(),
+      Color::White,
+    );
+
+    assert!(matches!(result, Ok(MoveResult::None))); // No check triggered
+  }
+
+  #[test]
+  fn test_king_check_after_upgrade() {
+    use crate::pieces::{King, Pawn, Queen};
+
+    let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
+
+    // White pawn at B7 (6,1), black king at G8 (7,5)
+    custom_board[6][1] = Some(Box::new(Pawn::new(Color::White)));
+    custom_board[7][5] = Some(Box::new(King::new(Color::Black)));
+
+    // Add a Queen to the white dead pieces (to be used for promotion)
+    let white_dead_pieces: Vec<Box<dyn Piece>> =
+      vec![Box::new(Queen::new(Color::White))];
+
+    let mut board_manager = BoardManager::new(Chessboard::new(
+      custom_board,
+      white_dead_pieces,
+      Vec::new(), // No black dead pieces
+    ));
+
+    // Move pawn from B7 to B8 (no capture), triggers upgrade
+    let result = board_manager.move_piece(
+      Position::new(6, 1).unwrap(), // B7
+      Position::new(7, 1).unwrap(), // B8
+      Color::White,
+    );
+
+    assert!(matches!(result, Ok(MoveResult::CanUpgradePiece)));
+    assert_eq!(board_manager.chessboard().white_dead_pieces().len(), 1);
+
+    // Upgrade the pawn to a Queen (from white's dead pieces)
+    let upgrade_result = board_manager.upgrade_piece(
+      0,
+      Color::White,
+      Position::new(7, 1).unwrap(), // B8
+    );
+
+    // The Queen at B8 should now check the black king at G8
+    assert!(matches!(upgrade_result, Ok(MoveResult::CheckKing)));
   }
 }
