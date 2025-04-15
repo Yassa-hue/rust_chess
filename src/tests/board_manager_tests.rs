@@ -146,4 +146,29 @@ mod tests {
         .can_upgrade(Position::new(7, 1).unwrap())
     ); // make sure it's not a pawn anymore
   }
+
+  #[test]
+  fn test_king_check_after_move() {
+    use crate::pieces::{King, Rook};
+
+    // Create a custom board where white rook checks black king
+    let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
+
+    // Place black king at E8 (row 7, col 4)
+    custom_board[7][4] = Some(Box::new(King::new(Color::Black)));
+
+    // Place white rook at E1 (row 0, col 4)
+    custom_board[0][4] = Some(Box::new(Rook::new(Color::White)));
+
+    let mut board_manager = BoardManager::new(Chessboard::new(custom_board));
+
+    // Move rook from E1 to E7 (just before the king), to put the king in check
+    let result = board_manager.move_piece(
+      Position::new(0, 4).unwrap(), // E1
+      Position::new(6, 4).unwrap(), // E7
+      Color::White,
+    );
+
+    assert!(matches!(result, Ok(MoveResult::CheckKing))); // Should result in check
+  }
 }

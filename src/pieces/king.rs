@@ -35,4 +35,8 @@ impl Movable for King {
   fn movement_pattern(&self, _: Position) -> MovementPattern {
     MovementPattern::new_appliable_once(KING_MOVES.to_vec())
   }
+
+  fn is_a_king(&self) -> bool {
+    true
+  }
 }

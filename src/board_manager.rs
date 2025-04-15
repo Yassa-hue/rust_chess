@@ -21,13 +21,38 @@ impl BoardManager {
     target_position: Position,
     current_player_color: Color,
   ) -> Result<MoveResult, String> {
-    if self.chessboard.is_position_empty(piece_position) {
-      return Err("No piece at the given position".to_string());
+    self.can_apply_move(
+      piece_position,
+      target_position,
+      current_player_color,
+    )?;
+
+    // apply the move safely
+    let res = self
+      .chessboard
+      .move_piece(piece_position, target_position)?;
+
+    // check if the king is checked after the upgrade
+    if res == MoveResult::CanUpgradePiece {
+      return Ok(res);
     }
 
-    if !self.can_player_move_piece_at(piece_position, current_player_color) {
-      return Err("Not your piece".to_string());
+    if self.is_king_checked(current_player_color) {
+      return Ok(MoveResult::CheckKing);
     }
+
+    Ok(res)
+  }
+
+  fn can_apply_move(
+    &mut self,
+    piece_position: Position,
+    target_position: Position,
+    current_player_color: Color,
+  ) -> Result<(), String> {
+    self.validate_piece_exists(piece_position)?;
+
+    self.validate_player_owns_piece(piece_position, current_player_color)?;
 
     let moving_piece = self.chessboard.get_piece(piece_position).unwrap();
 
@@ -75,9 +100,58 @@ impl BoardManager {
       }
       None => {}
     }
+    Ok(())
+  }
 
-    // apply the move safely
-    self.chessboard.move_piece(piece_position, target_position)
+  fn validate_piece_exists(
+    &mut self,
+    piece_position: Position,
+  ) -> Result<(), String> {
+    if self.chessboard.is_position_empty(piece_position) {
+      return Err("No piece at the given position".to_string());
+    }
+
+    Ok(())
+  }
+
+  fn validate_player_owns_piece(
+    &mut self,
+    piece_position: Position,
+    current_player_color: Color,
+  ) -> Result<(), String> {
+    if !self.can_player_move_piece_at(piece_position, current_player_color) {
+      return Err("Not your piece".to_string());
+    }
+
+    Ok(())
+  }
+
+  fn is_king_checked(&mut self, current_player_color: Color) -> bool {
+    let enemy_color = current_player_color.next();
+    let king_position = self.chessboard.get_king_position(enemy_color);
+
+    if king_position.is_none() {
+      return false;
+    }
+
+    let king_position = king_position.unwrap();
+
+    for position in self.chessboard.get_all_positions() {
+      if self.chessboard.is_position_empty(position) {
+        continue;
+      }
+      let piece = self.chessboard.get_piece(position).unwrap();
+
+      if piece.is_of_color(current_player_color) {
+        if self
+          .can_apply_move(position, king_position, current_player_color)
+          .is_ok()
+        {
+          return true;
+        }
+      }
+    }
+    false
   }
 
   pub fn upgrade_piece(
@@ -85,12 +159,18 @@ impl BoardManager {
     piece_index_in_dead_pieces_vector: usize,
     current_player_color: Color,
     target_position: Position,
-  ) -> Result<(), String> {
+  ) -> Result<MoveResult, String> {
     self.chessboard.upgrade_piece(
       piece_index_in_dead_pieces_vector,
       current_player_color,
       target_position,
-    )
+    )?;
+
+    if self.is_king_checked(current_player_color) {
+      return Ok(MoveResult::CheckKing);
+    }
+
+    Ok(MoveResult::None)
   }
 
   fn can_player_move_piece_at(

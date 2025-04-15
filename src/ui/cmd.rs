@@ -46,6 +46,9 @@ impl GameUI for CmdUI {
           println!("Move successful!");
           match res {
             MoveResult::None => (),
+            MoveResult::CheckKing => {
+              println!("Check! You need to protect your king.");
+            }
             MoveResult::CanUpgradePiece => {
               self.handle_upgrade_piece(game, end_pos)
             }

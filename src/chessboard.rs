@@ -6,9 +6,11 @@ use std::array::from_fn;
 
 pub type ChessboardType = [[Option<Box<dyn Piece>>; BOARD_SIZE]; BOARD_SIZE];
 
+#[derive(PartialEq, Debug)]
 pub enum MoveResult {
   None,
   CanUpgradePiece,
+  CheckKing,
 }
 
 const FIRST_WHITE_ROW_X_POS: usize = 0;
@@ -164,5 +166,26 @@ impl Chessboard {
     self.set_piece(target_position, Some(piece_to_upgrade));
 
     Ok(())
+  }
+
+  pub fn get_king_position(&self, color: Color) -> Option<Position> {
+    for position in self.get_all_positions() {
+      if let Some(piece) = self.get_piece(position) {
+        if piece.is_a_king() && piece.color() == &color {
+          return Some(position);
+        }
+      }
+    }
+    None
+  }
+
+  pub fn get_all_positions(&self) -> Vec<Position> {
+    let mut positions = Vec::new();
+    for x in 0..BOARD_SIZE {
+      for y in 0..BOARD_SIZE {
+        positions.push(Position::new(x, y).unwrap());
+      }
+    }
+    positions
   }
 }

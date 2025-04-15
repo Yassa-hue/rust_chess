@@ -55,4 +55,8 @@ pub trait Movable {
   fn can_upgrade(&self, _: Position) -> bool {
     false
   }
+
+  fn is_a_king(&self) -> bool {
+    false
+  }
 }

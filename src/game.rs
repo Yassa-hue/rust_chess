@@ -40,7 +40,7 @@ impl Game {
     &mut self,
     piece_index: usize,
     upgrade_position: Position,
-  ) -> Result<(), String> {
+  ) -> Result<MoveResult, String> {
     self
       .board_manager
       // The current player color is the opponent's color because it's changed after a valid move
