@@ -1,5 +1,5 @@
 use crate::pieces::types::color::Color;
-use crate::pieces::types::move_direction::{MoveOffsets, SpecialMove};
+use crate::pieces::types::move_direction::{MovementPattern, SpecialMove};
 use crate::pieces::types::position::Position;
 use crate::presenters::Presenter;
 
@@ -36,16 +36,16 @@ pub trait Movable {
     Err(())
   }
 
-  fn get_move_offsets(&self, start_position: Position) -> MoveOffsets;
+  fn movement_pattern(&self, start_position: Position) -> MovementPattern;
 
   fn get_path(
     &self,
     current_position: Position,
     target_position: Position,
   ) -> Option<Vec<Position>> {
-    let move_offsets = self.get_move_offsets(current_position);
+    let movement_pattern = self.movement_pattern(current_position);
 
-    move_offsets.construct_path(current_position, target_position)
+    movement_pattern.construct_path(current_position, target_position)
   }
 
   fn can_upgrade(&self, _: Position) -> bool {

@@ -1,7 +1,7 @@
 use crate::pieces::traits::{Movable, Piece};
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{
-  MoveDirection, MoveOffsets, SpecialMove, SpecialMoveValidationAction,
+  Direction, MovementPattern, SpecialMove, SpecialMoveValidationAction,
 };
 use crate::pieces::types::position::Position;
 
@@ -23,13 +23,13 @@ impl Pawn {
     Pawn { color }
   }
 
-  fn get_en_passant_move_offsets(&self) -> MoveOffsets {
+  fn get_en_passant_move_offsets(&self) -> MovementPattern {
     let offsets = match self.color {
-      Color::White => vec![MoveDirection::DownLeft, MoveDirection::DownRight],
-      Color::Black => vec![MoveDirection::UpLeft, MoveDirection::UpRight],
+      Color::White => vec![Direction::DownLeft, Direction::DownRight],
+      Color::Black => vec![Direction::UpLeft, Direction::UpRight],
     };
 
-    MoveOffsets::new_appliable_once(offsets)
+    MovementPattern::new_appliable_once(offsets)
   }
 }
 
@@ -40,10 +40,10 @@ impl Piece for Pawn {
 }
 
 impl Movable for Pawn {
-  fn get_move_offsets(&self, current_position: Position) -> MoveOffsets {
+  fn movement_pattern(&self, current_position: Position) -> MovementPattern {
     let offsets = match self.color {
-      Color::White => vec![MoveDirection::Down],
-      Color::Black => vec![MoveDirection::Up],
+      Color::White => vec![Direction::Down],
+      Color::Black => vec![Direction::Up],
     };
 
     // Pawns can move two squares forward from their starting position
@@ -51,10 +51,10 @@ impl Movable for Pawn {
       .iter()
       .any(|x| *x == current_position.x())
     {
-      MoveOffsets::new_appliable_twice(offsets)
+      MovementPattern::new_appliable_twice(offsets)
     } else {
       // Pawns can only move one square forward otherwise
-      MoveOffsets::new_appliable_once(offsets)
+      MovementPattern::new_appliable_once(offsets)
     }
   }
 
@@ -65,12 +65,11 @@ impl Movable for Pawn {
   ) -> Result<SpecialMove, ()> {
     let move_offsets = self.get_en_passant_move_offsets();
 
-    if let MoveOffsets::AppliableOnce(move_directions) = move_offsets {
+    if let MovementPattern::AppliableOnce(move_directions) = move_offsets {
       for move_direction in move_directions {
-        let target_x =
-          current_position.x() as i32 + move_direction.to_offset().dx;
-        let target_y =
-          current_position.y() as i32 + move_direction.to_offset().dy;
+        let offset = move_direction.to_offset();
+        let target_x = current_position.x() as i32 + offset.dx;
+        let target_y = current_position.y() as i32 + offset.dy;
 
         if target_x == target_position.x() as i32
           && target_y == target_position.y() as i32

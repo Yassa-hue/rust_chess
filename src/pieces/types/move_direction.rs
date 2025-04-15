@@ -1,15 +1,15 @@
 use crate::pieces::types::{BOARD_SIZE, position::Position};
 
 #[derive(PartialEq, Debug)]
-pub struct MoveDirectionOffset {
+pub struct Offset {
   pub dx: i32,
   pub dy: i32,
 }
 
-impl std::ops::Add<MoveDirectionOffset> for Position {
+impl std::ops::Add<Offset> for Position {
   type Output = Option<Position>;
 
-  fn add(self, other: MoveDirectionOffset) -> Option<Position> {
+  fn add(self, other: Offset) -> Option<Position> {
     let new_x = self.x() as i32 + other.dx;
     let new_y = self.y() as i32 + other.dy;
 
@@ -28,7 +28,7 @@ impl std::ops::Add<MoveDirectionOffset> for Position {
 }
 
 #[derive(PartialEq, Debug, Clone, Copy)]
-pub enum MoveDirection {
+pub enum Direction {
   Up,
   Down,
   Left,
@@ -47,84 +47,68 @@ pub enum MoveDirection {
   KnightRightDown,
 }
 
-impl MoveDirection {
-  pub fn to_offset(&self) -> MoveDirectionOffset {
+impl Direction {
+  pub fn to_offset(&self) -> Offset {
     match self {
-      MoveDirection::Up => MoveDirectionOffset { dx: -1, dy: 0 },
-      MoveDirection::Down => MoveDirectionOffset { dx: 1, dy: 0 },
-      MoveDirection::Left => MoveDirectionOffset { dx: 0, dy: -1 },
-      MoveDirection::Right => MoveDirectionOffset { dx: 0, dy: 1 },
-      MoveDirection::UpLeft => MoveDirectionOffset { dx: -1, dy: -1 },
-      MoveDirection::UpRight => MoveDirectionOffset { dx: -1, dy: 1 },
-      MoveDirection::DownLeft => MoveDirectionOffset { dx: 1, dy: -1 },
-      MoveDirection::DownRight => MoveDirectionOffset { dx: 1, dy: 1 },
-      MoveDirection::KnightUpLeft => MoveDirectionOffset { dx: -2, dy: -1 },
-      MoveDirection::KnightUpRight => MoveDirectionOffset { dx: -2, dy: 1 },
-      MoveDirection::KnightDownLeft => MoveDirectionOffset { dx: 2, dy: -1 },
-      MoveDirection::KnightDownRight => MoveDirectionOffset { dx: 2, dy: 1 },
-      MoveDirection::KnightLeftUp => MoveDirectionOffset { dx: -1, dy: -2 },
-      MoveDirection::KnightLeftDown => MoveDirectionOffset { dx: 1, dy: -2 },
-      MoveDirection::KnightRightUp => MoveDirectionOffset { dx: -1, dy: 2 },
-      MoveDirection::KnightRightDown => MoveDirectionOffset { dx: 1, dy: 2 },
+      Direction::Up => Offset { dx: -1, dy: 0 },
+      Direction::Down => Offset { dx: 1, dy: 0 },
+      Direction::Left => Offset { dx: 0, dy: -1 },
+      Direction::Right => Offset { dx: 0, dy: 1 },
+      Direction::UpLeft => Offset { dx: -1, dy: -1 },
+      Direction::UpRight => Offset { dx: -1, dy: 1 },
+      Direction::DownLeft => Offset { dx: 1, dy: -1 },
+      Direction::DownRight => Offset { dx: 1, dy: 1 },
+      Direction::KnightUpLeft => Offset { dx: -2, dy: -1 },
+      Direction::KnightUpRight => Offset { dx: -2, dy: 1 },
+      Direction::KnightDownLeft => Offset { dx: 2, dy: -1 },
+      Direction::KnightDownRight => Offset { dx: 2, dy: 1 },
+      Direction::KnightLeftUp => Offset { dx: -1, dy: -2 },
+      Direction::KnightLeftDown => Offset { dx: 1, dy: -2 },
+      Direction::KnightRightUp => Offset { dx: -1, dy: 2 },
+      Direction::KnightRightDown => Offset { dx: 1, dy: 2 },
     }
   }
 
-  pub fn from_offset(offset: MoveDirectionOffset) -> Option<Self> {
+  pub fn from_offset(offset: Offset) -> Option<Self> {
     match offset {
-      MoveDirectionOffset { dx: -1, dy: 0 } => Some(MoveDirection::Up),
-      MoveDirectionOffset { dx: 1, dy: 0 } => Some(MoveDirection::Down),
-      MoveDirectionOffset { dx: 0, dy: -1 } => Some(MoveDirection::Left),
-      MoveDirectionOffset { dx: 0, dy: 1 } => Some(MoveDirection::Right),
-      MoveDirectionOffset { dx: -1, dy: -1 } => Some(MoveDirection::UpLeft),
-      MoveDirectionOffset { dx: -1, dy: 1 } => Some(MoveDirection::UpRight),
-      MoveDirectionOffset { dx: 1, dy: -1 } => Some(MoveDirection::DownLeft),
-      MoveDirectionOffset { dx: 1, dy: 1 } => Some(MoveDirection::DownRight),
-      MoveDirectionOffset { dx: -2, dy: -1 } => {
-        Some(MoveDirection::KnightUpLeft)
-      }
-      MoveDirectionOffset { dx: -2, dy: 1 } => {
-        Some(MoveDirection::KnightUpRight)
-      }
-      MoveDirectionOffset { dx: 2, dy: -1 } => {
-        Some(MoveDirection::KnightDownLeft)
-      }
-      MoveDirectionOffset { dx: 2, dy: 1 } => {
-        Some(MoveDirection::KnightDownRight)
-      }
-      MoveDirectionOffset { dx: -1, dy: -2 } => {
-        Some(MoveDirection::KnightLeftUp)
-      }
-      MoveDirectionOffset { dx: 1, dy: -2 } => {
-        Some(MoveDirection::KnightLeftDown)
-      }
-      MoveDirectionOffset { dx: -1, dy: 2 } => {
-        Some(MoveDirection::KnightRightUp)
-      }
-      MoveDirectionOffset { dx: 1, dy: 2 } => {
-        Some(MoveDirection::KnightRightDown)
-      }
+      Offset { dx: -1, dy: 0 } => Some(Direction::Up),
+      Offset { dx: 1, dy: 0 } => Some(Direction::Down),
+      Offset { dx: 0, dy: -1 } => Some(Direction::Left),
+      Offset { dx: 0, dy: 1 } => Some(Direction::Right),
+      Offset { dx: -1, dy: -1 } => Some(Direction::UpLeft),
+      Offset { dx: -1, dy: 1 } => Some(Direction::UpRight),
+      Offset { dx: 1, dy: -1 } => Some(Direction::DownLeft),
+      Offset { dx: 1, dy: 1 } => Some(Direction::DownRight),
+      Offset { dx: -2, dy: -1 } => Some(Direction::KnightUpLeft),
+      Offset { dx: -2, dy: 1 } => Some(Direction::KnightUpRight),
+      Offset { dx: 2, dy: -1 } => Some(Direction::KnightDownLeft),
+      Offset { dx: 2, dy: 1 } => Some(Direction::KnightDownRight),
+      Offset { dx: -1, dy: -2 } => Some(Direction::KnightLeftUp),
+      Offset { dx: 1, dy: -2 } => Some(Direction::KnightLeftDown),
+      Offset { dx: -1, dy: 2 } => Some(Direction::KnightRightUp),
+      Offset { dx: 1, dy: 2 } => Some(Direction::KnightRightDown),
       _ => None,
     }
   }
 }
 
-pub enum MoveOffsets {
-  AppliableOnce(Vec<MoveDirection>),
-  AppliableTwice(Vec<MoveDirection>), // Only for Pawn
-  AppliableMultiple(Vec<MoveDirection>),
+pub enum MovementPattern {
+  AppliableOnce(Vec<Direction>),
+  AppliableTwice(Vec<Direction>), // Only for Pawn
+  AppliableMultiple(Vec<Direction>),
 }
 
-impl MoveOffsets {
-  pub fn new_appliable_once(offsets: Vec<MoveDirection>) -> Self {
-    MoveOffsets::AppliableOnce(offsets)
+impl MovementPattern {
+  pub fn new_appliable_once(offsets: Vec<Direction>) -> Self {
+    MovementPattern::AppliableOnce(offsets)
   }
 
-  pub fn new_appliable_multiple(offsets: Vec<MoveDirection>) -> Self {
-    MoveOffsets::AppliableMultiple(offsets)
+  pub fn new_appliable_multiple(offsets: Vec<Direction>) -> Self {
+    MovementPattern::AppliableMultiple(offsets)
   }
 
-  pub fn new_appliable_twice(offsets: Vec<MoveDirection>) -> Self {
-    MoveOffsets::AppliableTwice(offsets)
+  pub fn new_appliable_twice(offsets: Vec<Direction>) -> Self {
+    MovementPattern::AppliableTwice(offsets)
   }
 
   pub fn construct_path(
@@ -133,8 +117,8 @@ impl MoveOffsets {
     target_position: Position,
   ) -> Option<Vec<Position>> {
     match self {
-      MoveOffsets::AppliableOnce(move_directions) => {
-        let move_direction = MoveDirection::from_offset(MoveDirectionOffset {
+      MovementPattern::AppliableOnce(move_directions) => {
+        let move_direction = Direction::from_offset(Offset {
           dx: target_position.x() as i32 - current_position.x() as i32,
           dy: target_position.y() as i32 - current_position.y() as i32,
         });
@@ -152,7 +136,7 @@ impl MoveOffsets {
           }
         }
       }
-      MoveOffsets::AppliableTwice(moving_directions) => {
+      MovementPattern::AppliableTwice(moving_directions) => {
         for moving_direction in moving_directions {
           let mut path = vec![];
           let mut current = current_position;
@@ -171,7 +155,7 @@ impl MoveOffsets {
         }
         None
       }
-      MoveOffsets::AppliableMultiple(moving_directions) => {
+      MovementPattern::AppliableMultiple(moving_directions) => {
         for moving_direction in moving_directions {
           let mut path = vec![];
           let mut current = current_position;
@@ -194,6 +178,7 @@ impl MoveOffsets {
 pub enum SpecialMoveValidationAction {
   EnemyPieceExists,
 }
+
 #[derive(Hash, Eq, PartialEq, Debug, Clone, Copy)]
 pub enum SpecialMove {
   EnPassant(SpecialMoveValidationAction),
