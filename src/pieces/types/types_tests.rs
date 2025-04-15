@@ -1,6 +1,6 @@
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{
-  MoveDirection, MoveDirectionOffset, MoveOffsets,
+  Direction, MovementPattern, Offset,
 };
 use crate::pieces::types::position::Position;
 
@@ -32,22 +32,22 @@ fn test_position_add() {
   let pos = Position::new(3, 4).unwrap();
 
   // Test adding valid offset
-  let new_pos = pos + MoveDirectionOffset { dx: 2, dy: 2 };
+  let new_pos = pos + Offset { dx: 2, dy: 2 };
   assert!(new_pos.is_some());
   let new_pos = new_pos.unwrap();
   assert_eq!(new_pos.x(), 5);
   assert_eq!(new_pos.y(), 6);
 
   // Test adding invalid offset (out of bounds)
-  let new_pos = pos + MoveDirectionOffset { dx: 10, dy: 10 };
+  let new_pos = pos + Offset { dx: 10, dy: 10 };
   assert!(new_pos.is_none());
 }
 
 #[test]
 fn test_appliable_once_valid_move() {
   let move_directions =
-    vec![MoveDirection::KnightUpRight, MoveDirection::KnightDownRight];
-  let move_offsets = MoveOffsets::new_appliable_once(move_directions);
+    vec![Direction::KnightUpRight, Direction::KnightDownRight];
+  let move_offsets = MovementPattern::new_appliable_once(move_directions);
   let current = Position::new(4, 4).unwrap();
   let target = Position::new(6, 5).unwrap(); // KnightUpRight
 
@@ -57,9 +57,8 @@ fn test_appliable_once_valid_move() {
 
 #[test]
 fn test_appliable_once_invalid_move() {
-  let offsets =
-    vec![MoveDirection::KnightUpRight, MoveDirection::KnightDownLeft];
-  let move_offsets = MoveOffsets::new_appliable_once(offsets);
+  let offsets = vec![Direction::KnightUpRight, Direction::KnightDownLeft];
+  let move_offsets = MovementPattern::new_appliable_once(offsets);
   let current = Position::new(4, 4).unwrap();
   let target = Position::new(6, 6).unwrap(); // Not a valid knight move
 
@@ -69,8 +68,8 @@ fn test_appliable_once_invalid_move() {
 
 #[test]
 fn test_appliable_multiple_valid_straight_line() {
-  let offsets = vec![MoveDirection::Right]; // moving right
-  let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
+  let offsets = vec![Direction::Right]; // moving right
+  let move_offsets = MovementPattern::new_appliable_multiple(offsets);
   let current = Position::new(3, 3).unwrap();
   let target = Position::new(3, 6).unwrap();
 
@@ -87,8 +86,8 @@ fn test_appliable_multiple_valid_straight_line() {
 
 #[test]
 fn test_appliable_multiple_valid_diagonal() {
-  let offsets = vec![MoveDirection::DownRight];
-  let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
+  let offsets = vec![Direction::DownRight];
+  let move_offsets = MovementPattern::new_appliable_multiple(offsets);
   let current = Position::new(2, 2).unwrap();
   let target = Position::new(5, 5).unwrap();
 
@@ -105,8 +104,8 @@ fn test_appliable_multiple_valid_diagonal() {
 
 #[test]
 fn test_appliable_multiple_not_on_path() {
-  let offsets = vec![MoveDirection::Down]; // moving down only
-  let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
+  let offsets = vec![Direction::Down]; // moving down only
+  let move_offsets = MovementPattern::new_appliable_multiple(offsets);
   let current = Position::new(4, 4).unwrap();
   let target = Position::new(6, 6).unwrap(); // diagonal not reachable with Down
 
@@ -116,8 +115,8 @@ fn test_appliable_multiple_not_on_path() {
 
 #[test]
 fn test_appliable_multiple_same_position() {
-  let offsets = vec![MoveDirection::Down];
-  let move_offsets = MoveOffsets::new_appliable_multiple(offsets);
+  let offsets = vec![Direction::Down];
+  let move_offsets = MovementPattern::new_appliable_multiple(offsets);
   let current = Position::new(4, 4).unwrap();
   let target = Position::new(4, 4).unwrap(); // same as current
 
@@ -127,44 +126,29 @@ fn test_appliable_multiple_same_position() {
 
 #[test]
 fn test_move_direction_to_offset() {
-  assert_eq!(
-    MoveDirection::Up.to_offset(),
-    MoveDirectionOffset { dx: -1, dy: 0 }
-  );
-  assert_eq!(
-    MoveDirection::Down.to_offset(),
-    MoveDirectionOffset { dx: 1, dy: 0 }
-  );
-  assert_eq!(
-    MoveDirection::Left.to_offset(),
-    MoveDirectionOffset { dx: 0, dy: -1 }
-  );
-  assert_eq!(
-    MoveDirection::Right.to_offset(),
-    MoveDirectionOffset { dx: 0, dy: 1 }
-  );
+  assert_eq!(Direction::Up.to_offset(), Offset { dx: -1, dy: 0 });
+  assert_eq!(Direction::Down.to_offset(), Offset { dx: 1, dy: 0 });
+  assert_eq!(Direction::Left.to_offset(), Offset { dx: 0, dy: -1 });
+  assert_eq!(Direction::Right.to_offset(), Offset { dx: 0, dy: 1 });
 }
 
 #[test]
 fn test_move_direction_from_offset() {
   assert_eq!(
-    MoveDirection::from_offset(MoveDirectionOffset { dx: -1, dy: 0 }),
-    Some(MoveDirection::Up)
+    Direction::from_offset(Offset { dx: -1, dy: 0 }),
+    Some(Direction::Up)
   );
   assert_eq!(
-    MoveDirection::from_offset(MoveDirectionOffset { dx: 1, dy: 0 }),
-    Some(MoveDirection::Down)
+    Direction::from_offset(Offset { dx: 1, dy: 0 }),
+    Some(Direction::Down)
   );
   assert_eq!(
-    MoveDirection::from_offset(MoveDirectionOffset { dx: 0, dy: -1 }),
-    Some(MoveDirection::Left)
+    Direction::from_offset(Offset { dx: 0, dy: -1 }),
+    Some(Direction::Left)
   );
   assert_eq!(
-    MoveDirection::from_offset(MoveDirectionOffset { dx: 0, dy: 1 }),
-    Some(MoveDirection::Right)
+    Direction::from_offset(Offset { dx: 0, dy: 1 }),
+    Some(Direction::Right)
   );
-  assert_eq!(
-    MoveDirection::from_offset(MoveDirectionOffset { dx: 2, dy: 2 }),
-    None
-  );
+  assert_eq!(Direction::from_offset(Offset { dx: 2, dy: 2 }), None);
 }
