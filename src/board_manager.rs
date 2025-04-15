@@ -50,57 +50,84 @@ impl BoardManager {
     target_position: Position,
     current_player_color: Color,
   ) -> Result<(), String> {
-    self.validate_piece_exists(piece_position)?;
-
-    self.validate_player_owns_piece(piece_position, current_player_color)?;
+    self.validate_move_basics(piece_position, current_player_color)?;
 
     let moving_piece = self.chessboard.get_piece(piece_position).unwrap();
 
-    let can_step_into_position = |pos: Position| {
+    let special_move_attempt =
+      moving_piece.can_reach_via_special_move(piece_position, target_position);
+
+    let can_reach = {
+      let can_step =
+        self.get_can_step_checker(target_position, current_player_color);
+      moving_piece.can_reach(piece_position, target_position, &can_step)
+    };
+
+    if !can_reach && special_move_attempt.is_err() {
+      return Err("Invalid move".to_string());
+    }
+
+    if let Some(special_move_action) =
+      self.extract_special_move(special_move_attempt)?
+    {
+      if !self.validate_special_move(
+        special_move_action,
+        piece_position,
+        target_position,
+      ) {
+        return Err("Invalid special move".to_string());
+      }
+    }
+
+    Ok(())
+  }
+
+  fn validate_move_basics(
+    &mut self,
+    piece_position: Position,
+    current_player_color: Color,
+  ) -> Result<(), String> {
+    self.validate_piece_exists(piece_position)?;
+    self.validate_player_owns_piece(piece_position, current_player_color)?;
+
+    Ok(())
+  }
+
+  fn get_can_step_checker(
+    &self,
+    target_position: Position,
+    current_player_color: Color,
+  ) -> impl Fn(Position) -> bool + '_ {
+    move |pos| {
       if pos == target_position {
-        if let Some(piece) = self.chessboard.get_piece(pos) {
-          if piece.is_of_color(current_player_color) {
-            false
-          } else {
-            true
-          }
-        } else {
-          true
+        match self.chessboard.get_piece(pos) {
+          Some(piece) => !piece.is_of_color(current_player_color),
+          None => true,
         }
       } else {
         self.chessboard.is_position_empty(pos)
       }
-    };
-
-    let res =
-      moving_piece.can_reach_via_special_move(piece_position, target_position);
-
-    if !moving_piece.can_reach(
-      piece_position,
-      target_position,
-      &can_step_into_position,
-    ) && res.is_err()
-    {
-      return Err("Invalid move".to_string());
     }
+  }
 
-    let special_move_validation = match res {
-      Ok(special_move) => match special_move {
-        SpecialMove::EnPassant(action) => Some(action),
-      },
-      Err(_) => None,
-    };
-
-    match special_move_validation {
-      Some(validation_action) => {
-        let f = self.get_special_move_validation_action(validation_action);
-        if !f(self, piece_position, target_position) {
-          return Err("Invalid special move".to_string());
-        }
-      }
-      None => {}
+  fn extract_special_move(
+    &self,
+    result: Result<SpecialMove, ()>,
+  ) -> Result<Option<SpecialMoveValidationAction>, String> {
+    match result {
+      Ok(SpecialMove::EnPassant(action)) => Ok(Some(action)),
+      Err(_) => Ok(None),
     }
-    Ok(())
+  }
+
+  fn validate_special_move(
+    &mut self,
+    action: SpecialMoveValidationAction,
+    from: Position,
+    to: Position,
+  ) -> bool {
+    let validation_fn = self.get_special_move_validation_action(action);
+    validation_fn(self, from, to)
   }
 
   fn validate_piece_exists(
