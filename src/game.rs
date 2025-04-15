@@ -1,5 +1,5 @@
-use crate::board_manager::{BoardManager, MoveResult};
-use crate::chessboard::Chessboard;
+use crate::board_manager::BoardManager;
+use crate::chessboard::{Chessboard, MoveResult};
 use crate::pieces::types::color::Color;
 use crate::pieces::types::position::Position;
 

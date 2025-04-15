@@ -5,6 +5,10 @@ use crate::presenters::Presenter;
 
 pub trait Piece: Presenter + Movable {
   fn color(&self) -> &Color;
+
+  fn is_of_color(&self, color: Color) -> bool {
+    self.color() == &color
+  }
 }
 pub trait Movable {
   fn can_reach(

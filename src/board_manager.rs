@@ -1,15 +1,10 @@
-use crate::chessboard::Chessboard;
+use crate::chessboard::{Chessboard, MoveResult};
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{
   SpecialMove, SpecialMoveValidationAction,
 };
 use crate::pieces::types::position::Position;
 use std::collections::HashMap;
-
-pub enum MoveResult {
-  None,
-  CanUpgradePiece,
-}
 
 pub struct BoardManager {
   chessboard: Chessboard,
@@ -26,7 +21,7 @@ impl BoardManager {
     target_position: Position,
     current_player_color: Color,
   ) -> Result<MoveResult, String> {
-    if self.chessboard.get(piece_position).is_none() {
+    if self.chessboard.is_position_empty(piece_position) {
       return Err("No piece at the given position".to_string());
     }
 
@@ -34,17 +29,21 @@ impl BoardManager {
       return Err("Not your piece".to_string());
     }
 
-    let moving_piece = self.chessboard.get(piece_position).unwrap();
+    let moving_piece = self.chessboard.get_piece(piece_position).unwrap();
 
     let can_step_into_position = |pos: Position| {
       if pos == target_position {
-        if let Some(piece) = &self.chessboard.get(pos) {
-          *piece.color() != current_player_color
+        if let Some(piece) = self.chessboard.get_piece(pos) {
+          if piece.is_of_color(current_player_color) {
+            false
+          } else {
+            true
+          }
         } else {
           true
         }
       } else {
-        self.chessboard.get(pos).is_none()
+        self.chessboard.is_position_empty(pos)
       }
     };
 
@@ -78,20 +77,7 @@ impl BoardManager {
     }
 
     // apply the move safely
-    let piece = self.chessboard.take(piece_position).unwrap();
-
-    self.chessboard.capture_piece(target_position);
-
-    self.chessboard.set(target_position, Some(piece));
-    self.chessboard.set(piece_position, None);
-
-    let piece = self.chessboard.get(target_position).unwrap();
-
-    if piece.can_upgrade(target_position) {
-      return Ok(MoveResult::CanUpgradePiece);
-    }
-
-    return Ok(MoveResult::None);
+    self.chessboard.move_piece(piece_position, target_position)
   }
 
   pub fn upgrade_piece(
@@ -112,8 +98,10 @@ impl BoardManager {
     position: Position,
     player_color: Color,
   ) -> bool {
-    if let Some(piece) = self.chessboard.get(position) {
-      return *piece.color() == player_color;
+    if let Some(piece) = self.chessboard.get_piece(position) {
+      if piece.is_of_color(player_color) {
+        return true;
+      }
     }
     false
   }
@@ -128,20 +116,20 @@ impl BoardManager {
       |board_manager: &mut BoardManager,
        piece_position: Position,
        target_position: Position| {
-        if board_manager.chessboard.get(target_position).is_none() {
+        if board_manager.chessboard.is_position_empty(target_position) {
           return false;
         }
-
-        let target_piece =
-          board_manager.chessboard.get(target_position).unwrap();
-        if target_piece.color()
-          == board_manager
-            .chessboard
-            .get(piece_position)
-            .unwrap()
-            .color()
+        if let Some(piece) = board_manager.chessboard.get_piece(target_position)
         {
-          return false;
+          if piece.is_of_color(
+            *board_manager
+              .chessboard()
+              .get_piece(piece_position)
+              .unwrap()
+              .color(),
+          ) {
+            return false;
+          }
         }
         true
       },

@@ -1,4 +1,4 @@
-use crate::board_manager::MoveResult;
+use crate::chessboard::MoveResult;
 use crate::game::Game;
 use crate::pieces::types::position::Position;
 use crate::presenters::Presenter;

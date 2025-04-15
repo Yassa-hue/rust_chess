@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
-  use crate::board_manager::{BoardManager, MoveResult};
+  use crate::board_manager::BoardManager;
+  use crate::chessboard::MoveResult;
   use crate::chessboard::{Chessboard, ChessboardType};
   use crate::pieces::types::{color::Color, position::Position};
   use crate::pieces::{Pawn, Queen};

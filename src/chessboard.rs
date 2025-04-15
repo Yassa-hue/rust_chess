@@ -6,6 +6,11 @@ use std::array::from_fn;
 
 pub type ChessboardType = [[Option<Box<dyn Piece>>; BOARD_SIZE]; BOARD_SIZE];
 
+pub enum MoveResult {
+  None,
+  CanUpgradePiece,
+}
+
 const FIRST_WHITE_ROW_X_POS: usize = 0;
 const WHITE_PAWNS_ROW_X_POS: usize = 1;
 
@@ -66,27 +71,31 @@ impl Chessboard {
     ];
 
     for (col, piece) in back_row.into_iter().enumerate() {
-      self.set(Position::new(first_row, col).unwrap(), Some(piece));
+      self.set_piece(Position::new(first_row, col).unwrap(), Some(piece));
     }
 
     for col in 0..BOARD_SIZE {
-      self.set(
+      self.set_piece(
         Position::new(pawns_row, col).unwrap(),
         Some(Box::new(Pawn::new(color))),
       );
     }
   }
 
-  pub fn get(&self, pos: Position) -> Option<&Box<dyn Piece>> {
+  pub fn get_piece(&self, pos: Position) -> Option<&Box<dyn Piece>> {
     self.chessboard[pos.x()][pos.y()].as_ref()
   }
 
-  pub fn take(&mut self, pos: Position) -> Option<Box<dyn Piece>> {
+  fn take_piece(&mut self, pos: Position) -> Option<Box<dyn Piece>> {
     self.chessboard[pos.x()][pos.y()].take()
   }
 
-  pub fn set(&mut self, pos: Position, piece: Option<Box<dyn Piece>>) {
+  fn set_piece(&mut self, pos: Position, piece: Option<Box<dyn Piece>>) {
     self.chessboard[pos.x()][pos.y()] = piece;
+  }
+
+  pub fn is_position_empty(&self, position: Position) -> bool {
+    self.chessboard[position.x()][position.y()].is_none()
   }
 
   pub fn board(&self) -> &ChessboardType {
@@ -102,13 +111,36 @@ impl Chessboard {
   }
 
   pub fn capture_piece(&mut self, target_position: Position) {
-    if let Some(target_piece) = self.take(target_position) {
+    if let Some(target_piece) = self.take_piece(target_position) {
       if *target_piece.color() == Color::White {
         self.white_dead_pieces.push(target_piece);
       } else {
         self.black_dead_pieces.push(target_piece);
       }
     }
+  }
+
+  pub fn move_piece(
+    &mut self,
+    piece_position: Position,
+    target_position: Position,
+  ) -> Result<MoveResult, String> {
+    let piece = self
+      .take_piece(piece_position)
+      .ok_or("No piece at the given position")?;
+
+    self.capture_piece(target_position);
+
+    self.set_piece(target_position, Some(piece));
+    self.set_piece(piece_position, None);
+
+    let piece = self.get_piece(target_position).unwrap();
+
+    if piece.can_upgrade(target_position) {
+      return Ok(MoveResult::CanUpgradePiece);
+    }
+
+    Ok(MoveResult::None)
   }
 
   pub fn upgrade_piece(
@@ -129,7 +161,7 @@ impl Chessboard {
     let piece_to_upgrade =
       dead_pieces.remove(piece_index_in_dead_pieces_vector);
 
-    self.set(target_position, Some(piece_to_upgrade));
+    self.set_piece(target_position, Some(piece_to_upgrade));
 
     Ok(())
   }
