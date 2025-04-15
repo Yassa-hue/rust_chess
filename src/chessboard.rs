@@ -1,16 +1,16 @@
-use crate::chessboard_factory::ChessboardType;
-use crate::pieces::Piece;
+use crate::pieces::types::BOARD_SIZE;
 use crate::pieces::types::color::Color;
-use crate::pieces::types::move_direction::{
-  SpecialMove, SpecialMoveValidationAction,
-};
 use crate::pieces::types::position::Position;
-use std::collections::HashMap;
+use crate::pieces::{Bishop, King, Knight, Pawn, Piece, Queen, Rook};
+use std::array::from_fn;
 
-pub enum MoveResult {
-  None,
-  CanUpgradePiece,
-}
+pub type ChessboardType = [[Option<Box<dyn Piece>>; BOARD_SIZE]; BOARD_SIZE];
+
+const FIRST_WHITE_ROW_X_POS: usize = 0;
+const WHITE_PAWNS_ROW_X_POS: usize = 1;
+
+const FIRST_BLACK_ROW_X_POS: usize = 7;
+const BLACK_PAWNS_ROW_X_POS: usize = 6;
 
 pub struct Chessboard {
   chessboard: ChessboardType,
@@ -22,89 +22,93 @@ impl Chessboard {
   pub fn new(chessboard: ChessboardType) -> Self {
     Chessboard {
       chessboard,
-      white_dead_pieces: vec![],
-      black_dead_pieces: vec![],
+      white_dead_pieces: Vec::new(),
+      black_dead_pieces: Vec::new(),
     }
   }
 
-  pub fn move_piece(
+  pub fn empty() -> Self {
+    Self::new(from_fn(|_| from_fn(|_| None)))
+  }
+
+  pub fn standard() -> Self {
+    let mut board = Chessboard::empty();
+
+    board.initialize_pieces(
+      Color::White,
+      FIRST_WHITE_ROW_X_POS,
+      WHITE_PAWNS_ROW_X_POS,
+    );
+    board.initialize_pieces(
+      Color::Black,
+      FIRST_BLACK_ROW_X_POS,
+      BLACK_PAWNS_ROW_X_POS,
+    );
+
+    board
+  }
+
+  fn initialize_pieces(
     &mut self,
-    piece_position: Position,
-    target_position: Position,
-    current_player_color: Color,
-  ) -> Result<MoveResult, String> {
-    if self.chessboard[piece_position.x()][piece_position.y()].is_none() {
-      return Err("No piece at the given position".to_string());
+    color: Color,
+    first_row: usize,
+    pawns_row: usize,
+  ) {
+    let back_row: [Box<dyn Piece>; 8] = [
+      Box::new(Rook::new(color)),
+      Box::new(Knight::new(color)),
+      Box::new(Bishop::new(color)),
+      Box::new(Queen::new(color)),
+      Box::new(King::new(color)),
+      Box::new(Bishop::new(color)),
+      Box::new(Knight::new(color)),
+      Box::new(Rook::new(color)),
+    ];
+
+    for (col, piece) in back_row.into_iter().enumerate() {
+      self.set(Position::new(first_row, col).unwrap(), Some(piece));
     }
 
-    if !self.can_player_move_piece_at(piece_position, current_player_color) {
-      return Err("Not your piece".to_string());
+    for col in 0..BOARD_SIZE {
+      self.set(
+        Position::new(pawns_row, col).unwrap(),
+        Some(Box::new(Pawn::new(color))),
+      );
     }
+  }
 
-    let moving_piece = self.chessboard[piece_position.x()][piece_position.y()]
-      .as_ref()
-      .unwrap();
+  pub fn get(&self, pos: Position) -> Option<&Box<dyn Piece>> {
+    self.chessboard[pos.x()][pos.y()].as_ref()
+  }
 
-    let can_step_into_postion = |pos: Position| {
-      if pos == target_position {
-        if let Some(piece) = &self.chessboard[pos.x()][pos.y()] {
-          *piece.color() != current_player_color
-        } else {
-          true
-        }
+  pub fn take(&mut self, pos: Position) -> Option<Box<dyn Piece>> {
+    self.chessboard[pos.x()][pos.y()].take()
+  }
+
+  pub fn set(&mut self, pos: Position, piece: Option<Box<dyn Piece>>) {
+    self.chessboard[pos.x()][pos.y()] = piece;
+  }
+
+  pub fn board(&self) -> &ChessboardType {
+    &self.chessboard
+  }
+
+  pub fn white_dead_pieces(&self) -> &Vec<Box<dyn Piece>> {
+    &self.white_dead_pieces
+  }
+
+  pub fn black_dead_pieces(&self) -> &Vec<Box<dyn Piece>> {
+    &self.black_dead_pieces
+  }
+
+  pub fn capture_piece(&mut self, target_position: Position) {
+    if let Some(target_piece) = self.take(target_position) {
+      if *target_piece.color() == Color::White {
+        self.white_dead_pieces.push(target_piece);
       } else {
-        self.chessboard[pos.x()][pos.y()].is_none()
+        self.black_dead_pieces.push(target_piece);
       }
-    };
-
-    let res =
-      moving_piece.can_reach_via_special_move(piece_position, target_position);
-
-    if !moving_piece.can_reach(
-      piece_position,
-      target_position,
-      &can_step_into_postion,
-    ) && res.is_err()
-    {
-      return Err("Invalid move".to_string());
     }
-
-    let special_move_validation = match res {
-      Ok(special_move) => match special_move {
-        SpecialMove::EnPassant(action) => Some(action),
-      },
-      Err(_) => None,
-    };
-
-    match special_move_validation {
-      Some(validation_action) => {
-        let f = self.get_special_move_validation_action(validation_action);
-        if !f(self, piece_position, target_position) {
-          return Err("Invalid special move".to_string());
-        }
-      }
-      None => {}
-    }
-
-    // apply the move safely
-    let piece = self.chessboard[piece_position.x()][piece_position.y()]
-      .take()
-      .unwrap();
-
-    self.capture_piece(target_position);
-
-    self.chessboard[target_position.x()][target_position.y()] = Some(piece);
-    self.chessboard[piece_position.x()][piece_position.y()] = None;
-
-    let piece = self.chessboard[target_position.x()][target_position.y()]
-      .as_ref()
-      .unwrap();
-
-    if piece.can_upgrade(target_position) {
-      return Ok(MoveResult::CanUpgradePiece);
-    }
-
-    return Ok(MoveResult::None);
   }
 
   pub fn upgrade_piece(
@@ -124,88 +128,9 @@ impl Chessboard {
 
     let piece_to_upgrade =
       dead_pieces.remove(piece_index_in_dead_pieces_vector);
-    self.chessboard[target_position.x()][target_position.y()] =
-      Some(piece_to_upgrade);
+
+    self.set(target_position, Some(piece_to_upgrade));
 
     Ok(())
-  }
-
-  fn can_player_move_piece_at(
-    &self,
-    position: Position,
-    player_color: Color,
-  ) -> bool {
-    let piece = &self.chessboard[position.x()][position.y()];
-
-    if let Some(piece) = piece {
-      if *piece.color() == player_color {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  fn capture_piece(&mut self, target_position: Position) {
-    if let Some(target_piece) =
-      self.chessboard[target_position.x()][target_position.y()].take()
-    {
-      if *target_piece.color() == Color::White {
-        self.white_dead_pieces.push(target_piece);
-      } else {
-        self.black_dead_pieces.push(target_piece);
-      }
-    }
-  }
-
-  fn get_special_move_validation_action(
-    &self,
-    special_move_validation: SpecialMoveValidationAction,
-  ) -> Box<dyn Fn(&mut Chessboard, Position, Position) -> bool> {
-    let mut special_move_validation_functions = HashMap::new();
-    special_move_validation_functions.insert(
-      SpecialMoveValidationAction::EnemyPieceExists,
-      |chessboard: &mut Chessboard,
-       piece_position: Position,
-       target_position: Position| {
-        if chessboard.chessboard[target_position.x()][target_position.y()]
-          .is_none()
-        {
-          return false;
-        }
-
-        let target_piece = chessboard.chessboard[target_position.x()]
-          [target_position.y()]
-        .as_ref()
-        .unwrap();
-        if target_piece.color()
-          == chessboard.chessboard[piece_position.x()][piece_position.y()]
-            .as_ref()
-            .unwrap()
-            .color()
-        {
-          return false;
-        }
-        true
-      },
-    );
-
-    Box::new(
-      special_move_validation_functions
-        .remove(&special_move_validation)
-        .unwrap(),
-    )
-  }
-
-  pub fn chessboard(&self) -> &ChessboardType {
-    &self.chessboard
-  }
-
-  pub fn black_dead_pieces(&self) -> &Vec<Box<dyn Piece>> {
-    &self.black_dead_pieces
-  }
-
-  pub fn white_dead_pieces(&self) -> &Vec<Box<dyn Piece>> {
-    &self.white_dead_pieces
   }
 }

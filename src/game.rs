@@ -1,20 +1,20 @@
-use crate::chessboard::{Chessboard, MoveResult};
-use crate::chessboard_factory::ChessboardFactory;
+use crate::board_manager::{BoardManager, MoveResult};
+use crate::chessboard::Chessboard;
 use crate::pieces::types::color::Color;
 use crate::pieces::types::position::Position;
 
 pub struct Game {
   player_color: Color,
-  chessboard: Chessboard,
+  board_manager: BoardManager,
 }
 
 impl Game {
   pub fn new(player_color: Color) -> Self {
-    let board = ChessboardFactory::standard_board();
-    let chessboard = Chessboard::new(board);
+    let board = Chessboard::standard();
+    let board_manager = BoardManager::new(board);
     Game {
       player_color,
-      chessboard,
+      board_manager,
     }
   }
 
@@ -23,7 +23,7 @@ impl Game {
     piece_position: Position,
     target_position: Position,
   ) -> Result<MoveResult, String> {
-    match self.chessboard.move_piece(
+    match self.board_manager.move_piece(
       piece_position,
       target_position,
       self.player_color,
@@ -42,13 +42,13 @@ impl Game {
     upgrade_position: Position,
   ) -> Result<(), String> {
     self
-      .chessboard
+      .board_manager
       // The current player color is the opponent's color because it's changed after a valid move
       .upgrade_piece(piece_index, self.player_color().next(), upgrade_position)
   }
 
-  pub fn chessboard(&self) -> &Chessboard {
-    &self.chessboard
+  pub fn board_manager(&self) -> &BoardManager {
+    &self.board_manager
   }
 
   pub fn player_color(&self) -> Color {

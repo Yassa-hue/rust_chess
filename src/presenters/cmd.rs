@@ -66,7 +66,7 @@ impl Presenter for King {
 
 impl Presenter for Chessboard {
   fn render(&self) {
-    for (i, row) in self.chessboard().iter().enumerate() {
+    for (i, row) in self.board().iter().enumerate() {
       print!("{:3} ", 8 - i); // Add row numbers (123..)
       for square in row.iter() {
         match square {
@@ -116,6 +116,6 @@ impl fmt::Display for Color {
 impl Presenter for Game {
   fn render(&self) {
     println!("Current player: {}", self.player_color());
-    self.chessboard().render(); // Render the chessboard
+    self.board_manager().chessboard().render(); // Render the chessboard
   }
 }

@@ -1,5 +1,5 @@
+mod board_manager;
 mod chessboard;
-mod chessboard_factory;
 mod game;
 mod pieces;
 mod presenters;

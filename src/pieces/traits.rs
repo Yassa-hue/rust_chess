@@ -11,7 +11,7 @@ pub trait Movable {
     &self,
     current_position: Position,
     target_position: Position,
-    can_step_into_postion: &dyn Fn(Position) -> bool,
+    can_step_into_position: &dyn Fn(Position) -> bool,
   ) -> bool {
     let path = self.get_path(current_position, target_position);
     if path.is_none() {
@@ -21,7 +21,7 @@ pub trait Movable {
     let path = path.unwrap();
 
     for position in path.iter() {
-      if !can_step_into_postion(*position) {
+      if !can_step_into_position(*position) {
         return false;
       }
     }
