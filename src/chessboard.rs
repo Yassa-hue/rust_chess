@@ -1,10 +1,11 @@
 use crate::pieces::types::BOARD_SIZE;
 use crate::pieces::types::color::Color;
+use crate::pieces::types::piece::Piece;
 use crate::pieces::types::position::Position;
-use crate::pieces::{Bishop, King, Knight, Pawn, Piece, Queen, Rook};
+use crate::pieces::{Bishop, King, Knight, Pawn, Queen, Rook};
 use std::array::from_fn;
 
-pub type ChessboardType = [[Option<Box<dyn Piece>>; BOARD_SIZE]; BOARD_SIZE];
+pub type ChessboardType = [[Option<Piece>; BOARD_SIZE]; BOARD_SIZE];
 
 #[derive(PartialEq, Debug)]
 pub enum MoveResult {
@@ -21,15 +22,15 @@ const BLACK_PAWNS_ROW_X_POS: usize = 6;
 
 pub struct Chessboard {
   chessboard: ChessboardType,
-  white_dead_pieces: Vec<Box<dyn Piece>>,
-  black_dead_pieces: Vec<Box<dyn Piece>>,
+  white_dead_pieces: Vec<Piece>,
+  black_dead_pieces: Vec<Piece>,
 }
 
 impl Chessboard {
   pub fn new(
     chessboard: ChessboardType,
-    white_dead_pieces: Vec<Box<dyn Piece>>,
-    black_dead_pieces: Vec<Box<dyn Piece>>,
+    white_dead_pieces: Vec<Piece>,
+    black_dead_pieces: Vec<Piece>,
   ) -> Self {
     Chessboard {
       chessboard,
@@ -65,15 +66,15 @@ impl Chessboard {
     first_row: usize,
     pawns_row: usize,
   ) {
-    let back_row: [Box<dyn Piece>; 8] = [
-      Box::new(Rook::new(color)),
-      Box::new(Knight::new(color)),
-      Box::new(Bishop::new(color)),
-      Box::new(Queen::new(color)),
-      Box::new(King::new(color)),
-      Box::new(Bishop::new(color)),
-      Box::new(Knight::new(color)),
-      Box::new(Rook::new(color)),
+    let back_row: [Piece; 8] = [
+      Piece::Rook(Rook::new(color)),
+      Piece::Knight(Knight::new(color)),
+      Piece::Bishop(Bishop::new(color)),
+      Piece::Queen(Queen::new(color)),
+      Piece::King(King::new(color)),
+      Piece::Bishop(Bishop::new(color)),
+      Piece::Knight(Knight::new(color)),
+      Piece::Rook(Rook::new(color)),
     ];
 
     for (col, piece) in back_row.into_iter().enumerate() {
@@ -83,20 +84,20 @@ impl Chessboard {
     for col in 0..BOARD_SIZE {
       self.set_piece(
         Position::new(pawns_row, col).unwrap(),
-        Some(Box::new(Pawn::new(color))),
+        Some(Piece::Pawn(Pawn::new(color))),
       );
     }
   }
 
-  pub fn get_piece(&self, pos: Position) -> Option<&Box<dyn Piece>> {
+  pub fn get_piece(&self, pos: Position) -> Option<&Piece> {
     self.chessboard[pos.x()][pos.y()].as_ref()
   }
 
-  fn take_piece(&mut self, pos: Position) -> Option<Box<dyn Piece>> {
+  fn take_piece(&mut self, pos: Position) -> Option<Piece> {
     self.chessboard[pos.x()][pos.y()].take()
   }
 
-  fn set_piece(&mut self, pos: Position, piece: Option<Box<dyn Piece>>) {
+  fn set_piece(&mut self, pos: Position, piece: Option<Piece>) {
     self.chessboard[pos.x()][pos.y()] = piece;
   }
 
@@ -108,11 +109,11 @@ impl Chessboard {
     &self.chessboard
   }
 
-  pub fn white_dead_pieces(&self) -> &Vec<Box<dyn Piece>> {
+  pub fn white_dead_pieces(&self) -> &Vec<Piece> {
     &self.white_dead_pieces
   }
 
-  pub fn black_dead_pieces(&self) -> &Vec<Box<dyn Piece>> {
+  pub fn black_dead_pieces(&self) -> &Vec<Piece> {
     &self.black_dead_pieces
   }
 
@@ -142,7 +143,12 @@ impl Chessboard {
 
     let piece = self.get_piece(target_position).unwrap();
 
-    if piece.can_upgrade(target_position) {
+    let is_pawn = match piece {
+      Piece::Pawn(pawn) => pawn.can_upgrade(target_position),
+      _ => false,
+    };
+
+    if is_pawn {
       return Ok(MoveResult::CanUpgradePiece);
     }
 
@@ -175,7 +181,11 @@ impl Chessboard {
   pub fn get_king_position(&self, color: Color) -> Option<Position> {
     for position in self.get_all_positions() {
       if let Some(piece) = self.get_piece(position) {
-        if piece.is_a_king() && piece.color() == &color {
+        let is_king = match piece {
+          Piece::King(_) => true,
+          _ => false,
+        };
+        if is_king && piece.color() == &color {
           return Some(position);
         }
       }

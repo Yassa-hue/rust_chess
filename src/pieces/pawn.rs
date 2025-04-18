@@ -1,4 +1,4 @@
-use crate::pieces::traits::{Movable, Piece};
+use crate::pieces::traits::Movable;
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{
   Direction, MovementPattern, SpecialMove, SpecialMoveValidationAction,
@@ -33,9 +33,16 @@ impl Pawn {
   }
 }
 
-impl Piece for Pawn {
-  fn color(&self) -> &Color {
+impl Pawn {
+  pub fn color(&self) -> &Color {
     &self.color
+  }
+
+  pub fn can_upgrade(&self, current_position: Position) -> bool {
+    match self.color {
+      Color::White => current_position.x() == WHITE_PAWN_UPGRADE_X_POSITION,
+      Color::Black => current_position.x() == BLACK_PAWN_UPGRADE_X_POSITION,
+    }
   }
 }
 
@@ -82,12 +89,5 @@ impl Movable for Pawn {
     }
 
     Err(())
-  }
-
-  fn can_upgrade(&self, current_position: Position) -> bool {
-    match self.color {
-      Color::White => current_position.x() == WHITE_PAWN_UPGRADE_X_POSITION,
-      Color::Black => current_position.x() == BLACK_PAWN_UPGRADE_X_POSITION,
-    }
   }
 }

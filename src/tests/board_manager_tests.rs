@@ -3,7 +3,7 @@ mod tests {
   use crate::board_manager::BoardManager;
   use crate::chessboard::MoveResult;
   use crate::chessboard::{Chessboard, ChessboardType};
-  use crate::pieces::traits::Piece;
+  use crate::pieces::types::piece::Piece;
   use crate::pieces::types::{color::Color, position::Position};
   use crate::pieces::{Pawn, Queen};
   use std::array::from_fn;
@@ -81,8 +81,8 @@ mod tests {
     // Custom board setup
     let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
 
-    custom_board[4][4] = Some(Box::new(Pawn::new(Color::White)));
-    custom_board[5][3] = Some(Box::new(Pawn::new(Color::Black)));
+    custom_board[4][4] = Some(Piece::Pawn(Pawn::new(Color::White)));
+    custom_board[5][3] = Some(Piece::Pawn(Pawn::new(Color::Black)));
 
     let mut board_manager =
       BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
@@ -101,7 +101,7 @@ mod tests {
   #[test]
   fn test_pawn_upgrade_triggers_upgrade_result() {
     let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
-    custom_board[6][0] = Some(Box::new(Pawn::new(Color::White)));
+    custom_board[6][0] = Some(Piece::Pawn(Pawn::new(Color::White)));
 
     let mut board_manager =
       BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
@@ -120,8 +120,8 @@ mod tests {
     let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
 
     // Set up white pawn at 6, 0 (A7) and black pawn at 7, 1 (B8)
-    custom_board[6][0] = Some(Box::new(Pawn::new(Color::White)));
-    custom_board[7][1] = Some(Box::new(Queen::new(Color::Black)));
+    custom_board[6][0] = Some(Piece::Pawn(Pawn::new(Color::White)));
+    custom_board[7][1] = Some(Piece::Queen(Queen::new(Color::Black)));
 
     let mut board_manager =
       BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
@@ -143,12 +143,12 @@ mod tests {
 
     // Confirm the upgrade replaced the pawn on the board
     assert!(board_manager.chessboard().board()[7][1].is_some());
-    assert!(
-      !board_manager.chessboard().board()[7][1]
-        .as_ref()
-        .unwrap()
-        .can_upgrade(Position::new(7, 1).unwrap())
-    ); // make sure it's not a pawn anymore
+    let is_pawn =
+      match board_manager.chessboard().board()[7][1].as_ref().unwrap() {
+        Piece::Pawn(_) => true,
+        _ => false,
+      };
+    assert!(!is_pawn,); // make sure it's not a pawn anymore
   }
 
   #[test]
@@ -159,10 +159,10 @@ mod tests {
     let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
 
     // Place black king at E8 (row 7, col 4)
-    custom_board[7][4] = Some(Box::new(King::new(Color::Black)));
+    custom_board[7][4] = Some(Piece::King(King::new(Color::Black)));
 
     // Place white rook at E1 (row 0, col 4)
-    custom_board[0][4] = Some(Box::new(Rook::new(Color::White)));
+    custom_board[0][4] = Some(Piece::Rook(Rook::new(Color::White)));
 
     let mut board_manager =
       BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
@@ -183,8 +183,8 @@ mod tests {
 
     let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
 
-    custom_board[7][4] = Some(Box::new(King::new(Color::Black))); // Black king at E8
-    custom_board[0][0] = Some(Box::new(Rook::new(Color::White))); // White rook at A1
+    custom_board[7][4] = Some(Piece::King(King::new(Color::Black))); // Black king at E8
+    custom_board[0][0] = Some(Piece::Rook(Rook::new(Color::White))); // White rook at A1
 
     let mut board_manager =
       BoardManager::new(Chessboard::new(custom_board, Vec::new(), Vec::new()));
@@ -206,12 +206,12 @@ mod tests {
     let mut custom_board: ChessboardType = from_fn(|_| from_fn(|_| None));
 
     // White pawn at B7 (6,1), black king at G8 (7,5)
-    custom_board[6][1] = Some(Box::new(Pawn::new(Color::White)));
-    custom_board[7][5] = Some(Box::new(King::new(Color::Black)));
+    custom_board[6][1] = Some(Piece::Pawn(Pawn::new(Color::White)));
+    custom_board[7][5] = Some(Piece::King(King::new(Color::Black)));
 
     // Add a Queen to the white dead pieces (to be used for promotion)
-    let white_dead_pieces: Vec<Box<dyn Piece>> =
-      vec![Box::new(Queen::new(Color::White))];
+    let white_dead_pieces: Vec<Piece> =
+      vec![Piece::Queen(Queen::new(Color::White))];
 
     let mut board_manager = BoardManager::new(Chessboard::new(
       custom_board,

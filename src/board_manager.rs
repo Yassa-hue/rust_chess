@@ -1,4 +1,5 @@
 use crate::chessboard::{Chessboard, MoveResult};
+use crate::pieces::traits::Movable;
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{
   SpecialMove, SpecialMoveValidationAction,
