@@ -143,12 +143,12 @@ impl Chessboard {
 
     let piece = self.get_piece(target_position).unwrap();
 
-    let is_pawn = match piece {
+    let can_upgrade = match piece {
       Piece::Pawn(pawn) => pawn.can_upgrade(target_position),
       _ => false,
     };
 
-    if is_pawn {
+    if can_upgrade {
       return Ok(MoveResult::CanUpgradePiece);
     }
 
