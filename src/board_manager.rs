@@ -46,7 +46,7 @@ impl BoardManager {
   }
 
   fn can_apply_move(
-    &mut self,
+    &self,
     piece_position: Position,
     target_position: Position,
     current_player_color: Color,
@@ -84,7 +84,7 @@ impl BoardManager {
   }
 
   fn validate_move_basics(
-    &mut self,
+    &self,
     piece_position: Position,
     current_player_color: Color,
   ) -> Result<(), String> {
@@ -122,7 +122,7 @@ impl BoardManager {
   }
 
   fn validate_special_move(
-    &mut self,
+    &self,
     action: SpecialMoveValidationAction,
     from: Position,
     to: Position,
@@ -132,7 +132,7 @@ impl BoardManager {
   }
 
   fn validate_piece_exists(
-    &mut self,
+    &self,
     piece_position: Position,
   ) -> Result<(), String> {
     if self.chessboard.is_position_empty(piece_position) {
@@ -143,7 +143,7 @@ impl BoardManager {
   }
 
   fn validate_player_owns_piece(
-    &mut self,
+    &self,
     piece_position: Position,
     current_player_color: Color,
   ) -> Result<(), String> {
@@ -154,7 +154,7 @@ impl BoardManager {
     Ok(())
   }
 
-  fn is_king_checked(&mut self, current_player_color: Color) -> bool {
+  fn is_king_checked(&self, current_player_color: Color) -> bool {
     let enemy_color = current_player_color.next();
     let king_position = self.chessboard.get_king_position(enemy_color);
 
@@ -217,11 +217,11 @@ impl BoardManager {
   fn get_special_move_validation_action(
     &self,
     special_move_validation: SpecialMoveValidationAction,
-  ) -> Box<dyn Fn(&mut BoardManager, Position, Position) -> bool> {
+  ) -> Box<dyn Fn(&BoardManager, Position, Position) -> bool> {
     let mut special_move_validation_functions = HashMap::new();
     special_move_validation_functions.insert(
       SpecialMoveValidationAction::EnemyPieceExists,
-      |board_manager: &mut BoardManager,
+      |board_manager: &BoardManager,
        piece_position: Position,
        target_position: Position| {
         if board_manager.chessboard.is_position_empty(target_position) {
