@@ -1,4 +1,4 @@
-use crate::pieces::traits::{Movable, Piece};
+use crate::pieces::traits::Movable;
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{Direction, MovementPattern};
 use crate::pieces::types::position::Position;
@@ -25,8 +25,8 @@ impl King {
   }
 }
 
-impl Piece for King {
-  fn color(&self) -> &Color {
+impl King {
+  pub fn color(&self) -> &Color {
     &self.color
   }
 }
@@ -34,9 +34,5 @@ impl Piece for King {
 impl Movable for King {
   fn movement_pattern(&self, _: Position) -> MovementPattern {
     MovementPattern::new_appliable_once(KING_MOVES.to_vec())
-  }
-
-  fn is_a_king(&self) -> bool {
-    true
   }
 }

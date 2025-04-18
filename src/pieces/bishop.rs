@@ -1,4 +1,4 @@
-use crate::pieces::traits::{Movable, Piece};
+use crate::pieces::traits::Movable;
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{Direction, MovementPattern};
 use crate::pieces::types::position::Position;
@@ -21,8 +21,8 @@ impl Bishop {
   }
 }
 
-impl Piece for Bishop {
-  fn color(&self) -> &Color {
+impl Bishop {
+  pub fn color(&self) -> &Color {
     &self.color
   }
 }

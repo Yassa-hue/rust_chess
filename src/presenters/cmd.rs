@@ -1,11 +1,10 @@
 use std::fmt;
 
 use crate::game::Game;
+use crate::pieces::piece::Piece;
 use crate::{
   chessboard::Chessboard,
-  pieces::{
-    Bishop, King, Knight, Pawn, Piece, Queen, Rook, types::color::Color,
-  },
+  pieces::{Bishop, King, Knight, Pawn, Queen, Rook, types::color::Color},
 };
 
 use super::Presenter;
@@ -60,6 +59,19 @@ impl Presenter for King {
     match self.color() {
       Color::White => print!("K "),
       Color::Black => print!("k "),
+    }
+  }
+}
+
+impl Presenter for Piece {
+  fn render(&self) {
+    match self {
+      Piece::Pawn(pawn) => pawn.render(),
+      Piece::Knight(knight) => knight.render(),
+      Piece::Bishop(bishop) => bishop.render(),
+      Piece::Rook(rook) => rook.render(),
+      Piece::Queen(queen) => queen.render(),
+      Piece::King(king) => king.render(),
     }
   }
 }

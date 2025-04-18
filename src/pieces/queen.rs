@@ -1,4 +1,4 @@
-use crate::pieces::traits::{Movable, Piece};
+use crate::pieces::traits::Movable;
 use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{Direction, MovementPattern};
 use crate::pieces::types::position::Position;
@@ -25,8 +25,8 @@ impl Queen {
   }
 }
 
-impl Piece for Queen {
-  fn color(&self) -> &Color {
+impl Queen {
+  pub fn color(&self) -> &Color {
     &self.color
   }
 }

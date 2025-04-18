@@ -1,15 +1,6 @@
-use crate::pieces::types::color::Color;
 use crate::pieces::types::move_direction::{MovementPattern, SpecialMove};
 use crate::pieces::types::position::Position;
-use crate::presenters::Presenter;
 
-pub trait Piece: Presenter + Movable {
-  fn color(&self) -> &Color;
-
-  fn is_of_color(&self, color: Color) -> bool {
-    self.color() == &color
-  }
-}
 pub trait Movable {
   fn can_reach(
     &self,
@@ -50,13 +41,5 @@ pub trait Movable {
     let movement_pattern = self.movement_pattern(current_position);
 
     movement_pattern.construct_path(current_position, target_position)
-  }
-
-  fn can_upgrade(&self, _: Position) -> bool {
-    false
-  }
-
-  fn is_a_king(&self) -> bool {
-    false
   }
 }
