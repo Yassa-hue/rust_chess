@@ -99,16 +99,16 @@ pub enum MovementPattern {
 }
 
 impl MovementPattern {
-  pub fn new_appliable_once(offsets: Vec<Direction>) -> Self {
-    MovementPattern::AppliableOnce(offsets)
+  pub fn new_appliable_once(directions: Vec<Direction>) -> Self {
+    MovementPattern::AppliableOnce(directions)
   }
 
-  pub fn new_appliable_multiple(offsets: Vec<Direction>) -> Self {
-    MovementPattern::AppliableMultiple(offsets)
+  pub fn new_appliable_multiple(directions: Vec<Direction>) -> Self {
+    MovementPattern::AppliableMultiple(directions)
   }
 
-  pub fn new_appliable_twice(offsets: Vec<Direction>) -> Self {
-    MovementPattern::AppliableTwice(offsets)
+  pub fn new_appliable_twice(directions: Vec<Direction>) -> Self {
+    MovementPattern::AppliableTwice(directions)
   }
 
   pub fn construct_path(

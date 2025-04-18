@@ -23,13 +23,13 @@ impl Pawn {
     Pawn { color }
   }
 
-  fn get_en_passant_move_offsets(&self) -> MovementPattern {
-    let offsets = match self.color {
+  fn get_en_passant_movement_pattern(&self) -> MovementPattern {
+    let movement_directions = match self.color {
       Color::White => vec![Direction::DownLeft, Direction::DownRight],
       Color::Black => vec![Direction::UpLeft, Direction::UpRight],
     };
 
-    MovementPattern::new_appliable_once(offsets)
+    MovementPattern::new_appliable_once(movement_directions)
   }
 }
 
@@ -63,9 +63,9 @@ impl Movable for Pawn {
     current_position: Position,
     target_position: Position,
   ) -> Result<SpecialMove, ()> {
-    let move_offsets = self.get_en_passant_move_offsets();
+    let movement_pattern = self.get_en_passant_movement_pattern();
 
-    if let MovementPattern::AppliableOnce(move_directions) = move_offsets {
+    if let MovementPattern::AppliableOnce(move_directions) = movement_pattern {
       for move_direction in move_directions {
         let offset = move_direction.to_offset();
         let target_x = current_position.x() as i32 + offset.dx;
