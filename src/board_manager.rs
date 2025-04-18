@@ -5,6 +5,7 @@ use crate::pieces::types::move_direction::{
   SpecialMove, SpecialMoveValidationAction,
 };
 use crate::pieces::types::position::Position;
+use rayon::prelude::*;
 use std::collections::HashMap;
 
 pub struct BoardManager {
@@ -156,30 +157,31 @@ impl BoardManager {
 
   fn is_king_checked(&self, current_player_color: Color) -> bool {
     let enemy_color = current_player_color.next();
-    let king_position = self.chessboard.get_king_position(enemy_color);
+    let king_position = match self.chessboard.get_king_position(enemy_color) {
+      Some(pos) => pos,
+      None => return false,
+    };
 
-    if king_position.is_none() {
-      return false;
-    }
-
-    let king_position = king_position.unwrap();
-
-    for position in self.chessboard.get_all_positions() {
-      if self.chessboard.is_position_empty(position) {
-        continue;
-      }
-      let piece = self.chessboard.get_piece(position).unwrap();
-
-      if piece.is_of_color(current_player_color) {
-        if self
-          .can_apply_move(position, king_position, current_player_color)
-          .is_ok()
-        {
-          return true;
+    self
+      .chessboard
+      .get_all_positions()
+      .par_iter()
+      .filter_map(|&position| {
+        if self.chessboard.is_position_empty(position) {
+          return None;
         }
-      }
-    }
-    false
+        let piece = self.chessboard.get_piece(position)?;
+        if piece.is_of_color(current_player_color) {
+          Some(position)
+        } else {
+          None
+        }
+      })
+      .any(|from| {
+        self
+          .can_apply_move(from, king_position, current_player_color)
+          .is_ok()
+      })
   }
 
   pub fn upgrade_piece(
