@@ -1,6 +1,8 @@
 pub mod traits;
 pub mod types;
 
+pub mod piece;
+
 pub mod bishop;
 pub mod king;
 pub mod knight;

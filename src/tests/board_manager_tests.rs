@@ -3,7 +3,7 @@ mod tests {
   use crate::board_manager::BoardManager;
   use crate::chessboard::MoveResult;
   use crate::chessboard::{Chessboard, ChessboardType};
-  use crate::pieces::types::piece::Piece;
+  use crate::pieces::piece::Piece;
   use crate::pieces::types::{color::Color, position::Position};
   use crate::pieces::{Pawn, Queen};
   use std::array::from_fn;
